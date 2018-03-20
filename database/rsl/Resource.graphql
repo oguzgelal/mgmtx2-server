@@ -1,6 +1,10 @@
 type Resource {
   id: ID! @unique
 
+  # inherited from Entity
+  hasProperty: [HasProperty!]!
+  hasResolver: [HasResolver!]!
+
   createdAt: DateTime!
   updatedAt: DateTime!
 }

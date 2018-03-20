@@ -13,6 +13,17 @@ type ContextResolver implements Node {
 
 type Entity implements Node {
   id: ID!
+  hasProperty(where: HasPropertyWhereInput, orderBy: HasPropertyOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [HasProperty!]
+  hasResolver(where: HasResolverWhereInput, orderBy: HasResolverOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [HasResolver!]
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+type EntityItem implements Node {
+  id: ID!
+  ref(where: EntityWhereInput): Entity!
+  hasProperty(where: HasPropertyWhereInput, orderBy: HasPropertyOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [HasProperty!]
+  hasResolver(where: HasResolverWhereInput, orderBy: HasResolverOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [HasResolver!]
   createdAt: DateTime!
   updatedAt: DateTime!
 }
@@ -51,6 +62,21 @@ type HasTarget implements Node {
 
 type Link implements Node {
   id: ID!
+  hasSource(where: HasSourceWhereInput, orderBy: HasSourceOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [HasSource!]
+  hasTarget(where: HasTargetWhereInput, orderBy: HasTargetOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [HasTarget!]
+  hasProperty(where: HasPropertyWhereInput, orderBy: HasPropertyOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [HasProperty!]
+  hasResolver(where: HasResolverWhereInput, orderBy: HasResolverOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [HasResolver!]
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+type LinkItem implements Node {
+  id: ID!
+  ref(where: LinkWhereInput): Link!
+  hasSource(where: HasSourceWhereInput, orderBy: HasSourceOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [HasSource!]
+  hasTarget(where: HasTargetWhereInput, orderBy: HasTargetOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [HasTarget!]
+  hasProperty(where: HasPropertyWhereInput, orderBy: HasPropertyOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [HasProperty!]
+  hasResolver(where: HasResolverWhereInput, orderBy: HasResolverOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [HasResolver!]
   createdAt: DateTime!
   updatedAt: DateTime!
 }
@@ -83,12 +109,36 @@ type RefersTo implements Node {
 
 type Resource implements Node {
   id: ID!
+  hasProperty(where: HasPropertyWhereInput, orderBy: HasPropertyOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [HasProperty!]
+  hasResolver(where: HasResolverWhereInput, orderBy: HasResolverOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [HasResolver!]
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+type ResourceItem implements Node {
+  id: ID!
+  ref(where: ResourceWhereInput): Resource!
+  hasProperty(where: HasPropertyWhereInput, orderBy: HasPropertyOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [HasProperty!]
+  hasResolver(where: HasResolverWhereInput, orderBy: HasResolverOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [HasResolver!]
   createdAt: DateTime!
   updatedAt: DateTime!
 }
 
 type Selector implements Node {
   id: ID!
+  refersTo(where: RefersToWhereInput): RefersTo!
+  hasProperty(where: HasPropertyWhereInput, orderBy: HasPropertyOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [HasProperty!]
+  hasResolver(where: HasResolverWhereInput, orderBy: HasResolverOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [HasResolver!]
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+type SelectorItem implements Node {
+  id: ID!
+  ref(where: SelectorWhereInput): Selector!
+  refersTo(where: RefersToWhereInput): RefersTo!
+  hasProperty(where: HasPropertyWhereInput, orderBy: HasPropertyOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [HasProperty!]
+  hasResolver(where: HasResolverWhereInput, orderBy: HasResolverOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [HasResolver!]
   createdAt: DateTime!
   updatedAt: DateTime!
 }
@@ -114,6 +164,10 @@ type AggregateEntity {
   count: Int!
 }
 
+type AggregateEntityItem {
+  count: Int!
+}
+
 type AggregateHasProperty {
   count: Int!
 }
@@ -134,6 +188,10 @@ type AggregateLink {
   count: Int!
 }
 
+type AggregateLinkItem {
+  count: Int!
+}
+
 type AggregatePost {
   count: Int!
 }
@@ -150,7 +208,15 @@ type AggregateResource {
   count: Int!
 }
 
+type AggregateResourceItem {
+  count: Int!
+}
+
 type AggregateSelector {
+  count: Int!
+}
+
+type AggregateSelectorItem {
   count: Int!
 }
 
@@ -397,6 +463,16 @@ type EntityConnection {
   aggregate: AggregateEntity!
 }
 
+input EntityCreateInput {
+  hasProperty: HasPropertyCreateManyInput
+  hasResolver: HasResolverCreateManyInput
+}
+
+input EntityCreateOneInput {
+  create: EntityCreateInput
+  connect: EntityWhereUniqueInput
+}
+
 """
 An edge in a connection.
 """
@@ -409,6 +485,230 @@ type EntityEdge {
   A cursor for use in pagination.
   """
   cursor: String!
+}
+
+"""
+A connection to a list of items.
+"""
+type EntityItemConnection {
+  """
+  Information to aid in pagination.
+  """
+  pageInfo: PageInfo!
+  """
+  A list of edges.
+  """
+  edges: [EntityItemEdge]!
+  aggregate: AggregateEntityItem!
+}
+
+input EntityItemCreateInput {
+  ref: EntityCreateOneInput!
+  hasProperty: HasPropertyCreateManyInput
+  hasResolver: HasResolverCreateManyInput
+}
+
+"""
+An edge in a connection.
+"""
+type EntityItemEdge {
+  """
+  The item at the end of the edge.
+  """
+  node: EntityItem!
+  """
+  A cursor for use in pagination.
+  """
+  cursor: String!
+}
+
+enum EntityItemOrderByInput {
+  id_ASC
+  id_DESC
+  createdAt_ASC
+  createdAt_DESC
+  updatedAt_ASC
+  updatedAt_DESC
+}
+
+type EntityItemPreviousValues {
+  id: ID!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+type EntityItemSubscriptionPayload {
+  mutation: MutationType!
+  node: EntityItem
+  updatedFields: [String!]
+  previousValues: EntityItemPreviousValues
+}
+
+input EntityItemSubscriptionWhereInput {
+  """
+  Logical AND on all given filters.
+  """
+  AND: [EntityItemSubscriptionWhereInput!]
+  """
+  Logical OR on all given filters.
+  """
+  OR: [EntityItemSubscriptionWhereInput!]
+  """
+  The subscription event gets dispatched when it's listed in mutation_in
+  """
+  mutation_in: [MutationType!]
+  """
+  The subscription event gets only dispatched when one of the updated fields names is included in this list
+  """
+  updatedFields_contains: String
+  """
+  The subscription event gets only dispatched when all of the field names included in this list have been updated
+  """
+  updatedFields_contains_every: [String!]
+  """
+  The subscription event gets only dispatched when some of the field names included in this list have been updated
+  """
+  updatedFields_contains_some: [String!]
+  node: EntityItemWhereInput
+}
+
+input EntityItemUpdateInput {
+  ref: EntityUpdateOneInput
+  hasProperty: HasPropertyUpdateManyInput
+  hasResolver: HasResolverUpdateManyInput
+}
+
+input EntityItemWhereInput {
+  """
+  Logical AND on all given filters.
+  """
+  AND: [EntityItemWhereInput!]
+  """
+  Logical OR on all given filters.
+  """
+  OR: [EntityItemWhereInput!]
+  id: ID
+  """
+  All values that are not equal to given value.
+  """
+  id_not: ID
+  """
+  All values that are contained in given list.
+  """
+  id_in: [ID!]
+  """
+  All values that are not contained in given list.
+  """
+  id_not_in: [ID!]
+  """
+  All values less than the given value.
+  """
+  id_lt: ID
+  """
+  All values less than or equal the given value.
+  """
+  id_lte: ID
+  """
+  All values greater than the given value.
+  """
+  id_gt: ID
+  """
+  All values greater than or equal the given value.
+  """
+  id_gte: ID
+  """
+  All values containing the given string.
+  """
+  id_contains: ID
+  """
+  All values not containing the given string.
+  """
+  id_not_contains: ID
+  """
+  All values starting with the given string.
+  """
+  id_starts_with: ID
+  """
+  All values not starting with the given string.
+  """
+  id_not_starts_with: ID
+  """
+  All values ending with the given string.
+  """
+  id_ends_with: ID
+  """
+  All values not ending with the given string.
+  """
+  id_not_ends_with: ID
+  createdAt: DateTime
+  """
+  All values that are not equal to given value.
+  """
+  createdAt_not: DateTime
+  """
+  All values that are contained in given list.
+  """
+  createdAt_in: [DateTime!]
+  """
+  All values that are not contained in given list.
+  """
+  createdAt_not_in: [DateTime!]
+  """
+  All values less than the given value.
+  """
+  createdAt_lt: DateTime
+  """
+  All values less than or equal the given value.
+  """
+  createdAt_lte: DateTime
+  """
+  All values greater than the given value.
+  """
+  createdAt_gt: DateTime
+  """
+  All values greater than or equal the given value.
+  """
+  createdAt_gte: DateTime
+  updatedAt: DateTime
+  """
+  All values that are not equal to given value.
+  """
+  updatedAt_not: DateTime
+  """
+  All values that are contained in given list.
+  """
+  updatedAt_in: [DateTime!]
+  """
+  All values that are not contained in given list.
+  """
+  updatedAt_not_in: [DateTime!]
+  """
+  All values less than the given value.
+  """
+  updatedAt_lt: DateTime
+  """
+  All values less than or equal the given value.
+  """
+  updatedAt_lte: DateTime
+  """
+  All values greater than the given value.
+  """
+  updatedAt_gt: DateTime
+  """
+  All values greater than or equal the given value.
+  """
+  updatedAt_gte: DateTime
+  ref: EntityWhereInput
+  hasProperty_every: HasPropertyWhereInput
+  hasProperty_some: HasPropertyWhereInput
+  hasProperty_none: HasPropertyWhereInput
+  hasResolver_every: HasResolverWhereInput
+  hasResolver_some: HasResolverWhereInput
+  hasResolver_none: HasResolverWhereInput
+}
+
+input EntityItemWhereUniqueInput {
+  id: ID
 }
 
 enum EntityOrderByInput {
@@ -462,9 +762,38 @@ input EntitySubscriptionWhereInput {
 }
 
 enum EntityType {
+  Entity
+  EntityItem
   Resource
+  ResourceItem
   Selector
+  SelectorItem
   Link
+  LinkItem
+}
+
+input EntityUpdateDataInput {
+  hasProperty: HasPropertyUpdateManyInput
+  hasResolver: HasResolverUpdateManyInput
+}
+
+input EntityUpdateInput {
+  hasProperty: HasPropertyUpdateManyInput
+  hasResolver: HasResolverUpdateManyInput
+}
+
+input EntityUpdateOneInput {
+  create: EntityCreateInput
+  connect: EntityWhereUniqueInput
+  disconnect: Boolean
+  delete: Boolean
+  update: EntityUpdateDataInput
+  upsert: EntityUpsertNestedInput
+}
+
+input EntityUpsertNestedInput {
+  update: EntityUpdateDataInput!
+  create: EntityCreateInput!
 }
 
 input EntityWhereInput {
@@ -587,6 +916,12 @@ input EntityWhereInput {
   All values greater than or equal the given value.
   """
   updatedAt_gte: DateTime
+  hasProperty_every: HasPropertyWhereInput
+  hasProperty_some: HasPropertyWhereInput
+  hasProperty_none: HasPropertyWhereInput
+  hasResolver_every: HasResolverWhereInput
+  hasResolver_some: HasResolverWhereInput
+  hasResolver_none: HasResolverWhereInput
 }
 
 input EntityWhereUniqueInput {
@@ -611,6 +946,11 @@ type HasPropertyConnection {
 input HasPropertyCreateInput {
   sources: HasPropertyCreatesourcesInput
   targets: PropertyCreateManyInput
+}
+
+input HasPropertyCreateManyInput {
+  create: [HasPropertyCreateInput!]
+  connect: [HasPropertyWhereUniqueInput!]
 }
 
 input HasPropertyCreatesourcesInput {
@@ -682,13 +1022,38 @@ input HasPropertySubscriptionWhereInput {
   node: HasPropertyWhereInput
 }
 
+input HasPropertyUpdateDataInput {
+  sources: HasPropertyUpdatesourcesInput
+  targets: PropertyUpdateManyInput
+}
+
 input HasPropertyUpdateInput {
   sources: HasPropertyUpdatesourcesInput
   targets: PropertyUpdateManyInput
 }
 
+input HasPropertyUpdateManyInput {
+  create: [HasPropertyCreateInput!]
+  connect: [HasPropertyWhereUniqueInput!]
+  disconnect: [HasPropertyWhereUniqueInput!]
+  delete: [HasPropertyWhereUniqueInput!]
+  update: [HasPropertyUpdateWithWhereUniqueNestedInput!]
+  upsert: [HasPropertyUpsertWithWhereUniqueNestedInput!]
+}
+
 input HasPropertyUpdatesourcesInput {
   set: [EntityType!]
+}
+
+input HasPropertyUpdateWithWhereUniqueNestedInput {
+  where: HasPropertyWhereUniqueInput!
+  data: HasPropertyUpdateDataInput!
+}
+
+input HasPropertyUpsertWithWhereUniqueNestedInput {
+  where: HasPropertyWhereUniqueInput!
+  update: HasPropertyUpdateDataInput!
+  create: HasPropertyCreateInput!
 }
 
 input HasPropertyWhereInput {
@@ -840,6 +1205,11 @@ input HasResolverCreateInput {
   targets: ContextResolverCreateManyInput
 }
 
+input HasResolverCreateManyInput {
+  create: [HasResolverCreateInput!]
+  connect: [HasResolverWhereUniqueInput!]
+}
+
 input HasResolverCreatesourcesInput {
   set: [EntityType!]
 }
@@ -909,13 +1279,38 @@ input HasResolverSubscriptionWhereInput {
   node: HasResolverWhereInput
 }
 
+input HasResolverUpdateDataInput {
+  sources: HasResolverUpdatesourcesInput
+  targets: ContextResolverUpdateManyInput
+}
+
 input HasResolverUpdateInput {
   sources: HasResolverUpdatesourcesInput
   targets: ContextResolverUpdateManyInput
 }
 
+input HasResolverUpdateManyInput {
+  create: [HasResolverCreateInput!]
+  connect: [HasResolverWhereUniqueInput!]
+  disconnect: [HasResolverWhereUniqueInput!]
+  delete: [HasResolverWhereUniqueInput!]
+  update: [HasResolverUpdateWithWhereUniqueNestedInput!]
+  upsert: [HasResolverUpsertWithWhereUniqueNestedInput!]
+}
+
 input HasResolverUpdatesourcesInput {
   set: [EntityType!]
+}
+
+input HasResolverUpdateWithWhereUniqueNestedInput {
+  where: HasResolverWhereUniqueInput!
+  data: HasResolverUpdateDataInput!
+}
+
+input HasResolverUpsertWithWhereUniqueNestedInput {
+  where: HasResolverWhereUniqueInput!
+  update: HasResolverUpdateDataInput!
+  create: HasResolverCreateInput!
 }
 
 input HasResolverWhereInput {
@@ -1064,11 +1459,25 @@ type HasSourceConnection {
 
 input HasSourceCreateInput {
   targets: HasSourceCreatetargetsInput
-  sources: LinkCreateManyInput
+  sources: LinkCreateManyWithoutHasSourceInput
+}
+
+input HasSourceCreateManyInput {
+  create: [HasSourceCreateInput!]
+  connect: [HasSourceWhereUniqueInput!]
+}
+
+input HasSourceCreateManyWithoutSourcesInput {
+  create: [HasSourceCreateWithoutSourcesInput!]
+  connect: [HasSourceWhereUniqueInput!]
 }
 
 input HasSourceCreatetargetsInput {
   set: [EntityType!]
+}
+
+input HasSourceCreateWithoutSourcesInput {
+  targets: HasSourceCreatetargetsInput
 }
 
 """
@@ -1136,13 +1545,62 @@ input HasSourceSubscriptionWhereInput {
   node: HasSourceWhereInput
 }
 
+input HasSourceUpdateDataInput {
+  targets: HasSourceUpdatetargetsInput
+  sources: LinkUpdateManyWithoutHasSourceInput
+}
+
 input HasSourceUpdateInput {
   targets: HasSourceUpdatetargetsInput
-  sources: LinkUpdateManyInput
+  sources: LinkUpdateManyWithoutHasSourceInput
+}
+
+input HasSourceUpdateManyInput {
+  create: [HasSourceCreateInput!]
+  connect: [HasSourceWhereUniqueInput!]
+  disconnect: [HasSourceWhereUniqueInput!]
+  delete: [HasSourceWhereUniqueInput!]
+  update: [HasSourceUpdateWithWhereUniqueNestedInput!]
+  upsert: [HasSourceUpsertWithWhereUniqueNestedInput!]
+}
+
+input HasSourceUpdateManyWithoutSourcesInput {
+  create: [HasSourceCreateWithoutSourcesInput!]
+  connect: [HasSourceWhereUniqueInput!]
+  disconnect: [HasSourceWhereUniqueInput!]
+  delete: [HasSourceWhereUniqueInput!]
+  update: [HasSourceUpdateWithWhereUniqueWithoutSourcesInput!]
+  upsert: [HasSourceUpsertWithWhereUniqueWithoutSourcesInput!]
 }
 
 input HasSourceUpdatetargetsInput {
   set: [EntityType!]
+}
+
+input HasSourceUpdateWithoutSourcesDataInput {
+  targets: HasSourceUpdatetargetsInput
+}
+
+input HasSourceUpdateWithWhereUniqueNestedInput {
+  where: HasSourceWhereUniqueInput!
+  data: HasSourceUpdateDataInput!
+}
+
+input HasSourceUpdateWithWhereUniqueWithoutSourcesInput {
+  where: HasSourceWhereUniqueInput!
+  data: HasSourceUpdateWithoutSourcesDataInput!
+}
+
+input HasSourceUpsertWithWhereUniqueNestedInput {
+  where: HasSourceWhereUniqueInput!
+  update: HasSourceUpdateDataInput!
+  create: HasSourceCreateInput!
+}
+
+input HasSourceUpsertWithWhereUniqueWithoutSourcesInput {
+  where: HasSourceWhereUniqueInput!
+  update: HasSourceUpdateWithoutSourcesDataInput!
+  create: HasSourceCreateWithoutSourcesInput!
 }
 
 input HasSourceWhereInput {
@@ -1291,11 +1749,25 @@ type HasTargetConnection {
 
 input HasTargetCreateInput {
   targets: HasTargetCreatetargetsInput
-  sources: LinkCreateManyInput
+  sources: LinkCreateManyWithoutHasTargetInput
+}
+
+input HasTargetCreateManyInput {
+  create: [HasTargetCreateInput!]
+  connect: [HasTargetWhereUniqueInput!]
+}
+
+input HasTargetCreateManyWithoutSourcesInput {
+  create: [HasTargetCreateWithoutSourcesInput!]
+  connect: [HasTargetWhereUniqueInput!]
 }
 
 input HasTargetCreatetargetsInput {
   set: [EntityType!]
+}
+
+input HasTargetCreateWithoutSourcesInput {
+  targets: HasTargetCreatetargetsInput
 }
 
 """
@@ -1363,13 +1835,62 @@ input HasTargetSubscriptionWhereInput {
   node: HasTargetWhereInput
 }
 
+input HasTargetUpdateDataInput {
+  targets: HasTargetUpdatetargetsInput
+  sources: LinkUpdateManyWithoutHasTargetInput
+}
+
 input HasTargetUpdateInput {
   targets: HasTargetUpdatetargetsInput
-  sources: LinkUpdateManyInput
+  sources: LinkUpdateManyWithoutHasTargetInput
+}
+
+input HasTargetUpdateManyInput {
+  create: [HasTargetCreateInput!]
+  connect: [HasTargetWhereUniqueInput!]
+  disconnect: [HasTargetWhereUniqueInput!]
+  delete: [HasTargetWhereUniqueInput!]
+  update: [HasTargetUpdateWithWhereUniqueNestedInput!]
+  upsert: [HasTargetUpsertWithWhereUniqueNestedInput!]
+}
+
+input HasTargetUpdateManyWithoutSourcesInput {
+  create: [HasTargetCreateWithoutSourcesInput!]
+  connect: [HasTargetWhereUniqueInput!]
+  disconnect: [HasTargetWhereUniqueInput!]
+  delete: [HasTargetWhereUniqueInput!]
+  update: [HasTargetUpdateWithWhereUniqueWithoutSourcesInput!]
+  upsert: [HasTargetUpsertWithWhereUniqueWithoutSourcesInput!]
 }
 
 input HasTargetUpdatetargetsInput {
   set: [EntityType!]
+}
+
+input HasTargetUpdateWithoutSourcesDataInput {
+  targets: HasTargetUpdatetargetsInput
+}
+
+input HasTargetUpdateWithWhereUniqueNestedInput {
+  where: HasTargetWhereUniqueInput!
+  data: HasTargetUpdateDataInput!
+}
+
+input HasTargetUpdateWithWhereUniqueWithoutSourcesInput {
+  where: HasTargetWhereUniqueInput!
+  data: HasTargetUpdateWithoutSourcesDataInput!
+}
+
+input HasTargetUpsertWithWhereUniqueNestedInput {
+  where: HasTargetWhereUniqueInput!
+  update: HasTargetUpdateDataInput!
+  create: HasTargetCreateInput!
+}
+
+input HasTargetUpsertWithWhereUniqueWithoutSourcesInput {
+  where: HasTargetWhereUniqueInput!
+  update: HasTargetUpdateWithoutSourcesDataInput!
+  create: HasTargetCreateWithoutSourcesInput!
 }
 
 input HasTargetWhereInput {
@@ -1516,8 +2037,38 @@ type LinkConnection {
   aggregate: AggregateLink!
 }
 
-input LinkCreateManyInput {
+input LinkCreateInput {
+  hasSource: HasSourceCreateManyWithoutSourcesInput
+  hasTarget: HasTargetCreateManyWithoutSourcesInput
+  hasProperty: HasPropertyCreateManyInput
+  hasResolver: HasResolverCreateManyInput
+}
+
+input LinkCreateManyWithoutHasSourceInput {
+  create: [LinkCreateWithoutHasSourceInput!]
   connect: [LinkWhereUniqueInput!]
+}
+
+input LinkCreateManyWithoutHasTargetInput {
+  create: [LinkCreateWithoutHasTargetInput!]
+  connect: [LinkWhereUniqueInput!]
+}
+
+input LinkCreateOneInput {
+  create: LinkCreateInput
+  connect: LinkWhereUniqueInput
+}
+
+input LinkCreateWithoutHasSourceInput {
+  hasTarget: HasTargetCreateManyWithoutSourcesInput
+  hasProperty: HasPropertyCreateManyInput
+  hasResolver: HasResolverCreateManyInput
+}
+
+input LinkCreateWithoutHasTargetInput {
+  hasSource: HasSourceCreateManyWithoutSourcesInput
+  hasProperty: HasPropertyCreateManyInput
+  hasResolver: HasResolverCreateManyInput
 }
 
 """
@@ -1532,6 +2083,240 @@ type LinkEdge {
   A cursor for use in pagination.
   """
   cursor: String!
+}
+
+"""
+A connection to a list of items.
+"""
+type LinkItemConnection {
+  """
+  Information to aid in pagination.
+  """
+  pageInfo: PageInfo!
+  """
+  A list of edges.
+  """
+  edges: [LinkItemEdge]!
+  aggregate: AggregateLinkItem!
+}
+
+input LinkItemCreateInput {
+  ref: LinkCreateOneInput!
+  hasSource: HasSourceCreateManyInput
+  hasTarget: HasTargetCreateManyInput
+  hasProperty: HasPropertyCreateManyInput
+  hasResolver: HasResolverCreateManyInput
+}
+
+"""
+An edge in a connection.
+"""
+type LinkItemEdge {
+  """
+  The item at the end of the edge.
+  """
+  node: LinkItem!
+  """
+  A cursor for use in pagination.
+  """
+  cursor: String!
+}
+
+enum LinkItemOrderByInput {
+  id_ASC
+  id_DESC
+  createdAt_ASC
+  createdAt_DESC
+  updatedAt_ASC
+  updatedAt_DESC
+}
+
+type LinkItemPreviousValues {
+  id: ID!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+type LinkItemSubscriptionPayload {
+  mutation: MutationType!
+  node: LinkItem
+  updatedFields: [String!]
+  previousValues: LinkItemPreviousValues
+}
+
+input LinkItemSubscriptionWhereInput {
+  """
+  Logical AND on all given filters.
+  """
+  AND: [LinkItemSubscriptionWhereInput!]
+  """
+  Logical OR on all given filters.
+  """
+  OR: [LinkItemSubscriptionWhereInput!]
+  """
+  The subscription event gets dispatched when it's listed in mutation_in
+  """
+  mutation_in: [MutationType!]
+  """
+  The subscription event gets only dispatched when one of the updated fields names is included in this list
+  """
+  updatedFields_contains: String
+  """
+  The subscription event gets only dispatched when all of the field names included in this list have been updated
+  """
+  updatedFields_contains_every: [String!]
+  """
+  The subscription event gets only dispatched when some of the field names included in this list have been updated
+  """
+  updatedFields_contains_some: [String!]
+  node: LinkItemWhereInput
+}
+
+input LinkItemUpdateInput {
+  ref: LinkUpdateOneInput
+  hasSource: HasSourceUpdateManyInput
+  hasTarget: HasTargetUpdateManyInput
+  hasProperty: HasPropertyUpdateManyInput
+  hasResolver: HasResolverUpdateManyInput
+}
+
+input LinkItemWhereInput {
+  """
+  Logical AND on all given filters.
+  """
+  AND: [LinkItemWhereInput!]
+  """
+  Logical OR on all given filters.
+  """
+  OR: [LinkItemWhereInput!]
+  id: ID
+  """
+  All values that are not equal to given value.
+  """
+  id_not: ID
+  """
+  All values that are contained in given list.
+  """
+  id_in: [ID!]
+  """
+  All values that are not contained in given list.
+  """
+  id_not_in: [ID!]
+  """
+  All values less than the given value.
+  """
+  id_lt: ID
+  """
+  All values less than or equal the given value.
+  """
+  id_lte: ID
+  """
+  All values greater than the given value.
+  """
+  id_gt: ID
+  """
+  All values greater than or equal the given value.
+  """
+  id_gte: ID
+  """
+  All values containing the given string.
+  """
+  id_contains: ID
+  """
+  All values not containing the given string.
+  """
+  id_not_contains: ID
+  """
+  All values starting with the given string.
+  """
+  id_starts_with: ID
+  """
+  All values not starting with the given string.
+  """
+  id_not_starts_with: ID
+  """
+  All values ending with the given string.
+  """
+  id_ends_with: ID
+  """
+  All values not ending with the given string.
+  """
+  id_not_ends_with: ID
+  createdAt: DateTime
+  """
+  All values that are not equal to given value.
+  """
+  createdAt_not: DateTime
+  """
+  All values that are contained in given list.
+  """
+  createdAt_in: [DateTime!]
+  """
+  All values that are not contained in given list.
+  """
+  createdAt_not_in: [DateTime!]
+  """
+  All values less than the given value.
+  """
+  createdAt_lt: DateTime
+  """
+  All values less than or equal the given value.
+  """
+  createdAt_lte: DateTime
+  """
+  All values greater than the given value.
+  """
+  createdAt_gt: DateTime
+  """
+  All values greater than or equal the given value.
+  """
+  createdAt_gte: DateTime
+  updatedAt: DateTime
+  """
+  All values that are not equal to given value.
+  """
+  updatedAt_not: DateTime
+  """
+  All values that are contained in given list.
+  """
+  updatedAt_in: [DateTime!]
+  """
+  All values that are not contained in given list.
+  """
+  updatedAt_not_in: [DateTime!]
+  """
+  All values less than the given value.
+  """
+  updatedAt_lt: DateTime
+  """
+  All values less than or equal the given value.
+  """
+  updatedAt_lte: DateTime
+  """
+  All values greater than the given value.
+  """
+  updatedAt_gt: DateTime
+  """
+  All values greater than or equal the given value.
+  """
+  updatedAt_gte: DateTime
+  ref: LinkWhereInput
+  hasSource_every: HasSourceWhereInput
+  hasSource_some: HasSourceWhereInput
+  hasSource_none: HasSourceWhereInput
+  hasTarget_every: HasTargetWhereInput
+  hasTarget_some: HasTargetWhereInput
+  hasTarget_none: HasTargetWhereInput
+  hasProperty_every: HasPropertyWhereInput
+  hasProperty_some: HasPropertyWhereInput
+  hasProperty_none: HasPropertyWhereInput
+  hasResolver_every: HasResolverWhereInput
+  hasResolver_some: HasResolverWhereInput
+  hasResolver_none: HasResolverWhereInput
+}
+
+input LinkItemWhereUniqueInput {
+  id: ID
 }
 
 enum LinkOrderByInput {
@@ -1584,10 +2369,84 @@ input LinkSubscriptionWhereInput {
   node: LinkWhereInput
 }
 
-input LinkUpdateManyInput {
+input LinkUpdateDataInput {
+  hasSource: HasSourceUpdateManyWithoutSourcesInput
+  hasTarget: HasTargetUpdateManyWithoutSourcesInput
+  hasProperty: HasPropertyUpdateManyInput
+  hasResolver: HasResolverUpdateManyInput
+}
+
+input LinkUpdateInput {
+  hasSource: HasSourceUpdateManyWithoutSourcesInput
+  hasTarget: HasTargetUpdateManyWithoutSourcesInput
+  hasProperty: HasPropertyUpdateManyInput
+  hasResolver: HasResolverUpdateManyInput
+}
+
+input LinkUpdateManyWithoutHasSourceInput {
+  create: [LinkCreateWithoutHasSourceInput!]
   connect: [LinkWhereUniqueInput!]
   disconnect: [LinkWhereUniqueInput!]
   delete: [LinkWhereUniqueInput!]
+  update: [LinkUpdateWithWhereUniqueWithoutHasSourceInput!]
+  upsert: [LinkUpsertWithWhereUniqueWithoutHasSourceInput!]
+}
+
+input LinkUpdateManyWithoutHasTargetInput {
+  create: [LinkCreateWithoutHasTargetInput!]
+  connect: [LinkWhereUniqueInput!]
+  disconnect: [LinkWhereUniqueInput!]
+  delete: [LinkWhereUniqueInput!]
+  update: [LinkUpdateWithWhereUniqueWithoutHasTargetInput!]
+  upsert: [LinkUpsertWithWhereUniqueWithoutHasTargetInput!]
+}
+
+input LinkUpdateOneInput {
+  create: LinkCreateInput
+  connect: LinkWhereUniqueInput
+  disconnect: Boolean
+  delete: Boolean
+  update: LinkUpdateDataInput
+  upsert: LinkUpsertNestedInput
+}
+
+input LinkUpdateWithoutHasSourceDataInput {
+  hasTarget: HasTargetUpdateManyWithoutSourcesInput
+  hasProperty: HasPropertyUpdateManyInput
+  hasResolver: HasResolverUpdateManyInput
+}
+
+input LinkUpdateWithoutHasTargetDataInput {
+  hasSource: HasSourceUpdateManyWithoutSourcesInput
+  hasProperty: HasPropertyUpdateManyInput
+  hasResolver: HasResolverUpdateManyInput
+}
+
+input LinkUpdateWithWhereUniqueWithoutHasSourceInput {
+  where: LinkWhereUniqueInput!
+  data: LinkUpdateWithoutHasSourceDataInput!
+}
+
+input LinkUpdateWithWhereUniqueWithoutHasTargetInput {
+  where: LinkWhereUniqueInput!
+  data: LinkUpdateWithoutHasTargetDataInput!
+}
+
+input LinkUpsertNestedInput {
+  update: LinkUpdateDataInput!
+  create: LinkCreateInput!
+}
+
+input LinkUpsertWithWhereUniqueWithoutHasSourceInput {
+  where: LinkWhereUniqueInput!
+  update: LinkUpdateWithoutHasSourceDataInput!
+  create: LinkCreateWithoutHasSourceInput!
+}
+
+input LinkUpsertWithWhereUniqueWithoutHasTargetInput {
+  where: LinkWhereUniqueInput!
+  update: LinkUpdateWithoutHasTargetDataInput!
+  create: LinkCreateWithoutHasTargetInput!
 }
 
 input LinkWhereInput {
@@ -1710,6 +2569,18 @@ input LinkWhereInput {
   All values greater than or equal the given value.
   """
   updatedAt_gte: DateTime
+  hasSource_every: HasSourceWhereInput
+  hasSource_some: HasSourceWhereInput
+  hasSource_none: HasSourceWhereInput
+  hasTarget_every: HasTargetWhereInput
+  hasTarget_some: HasTargetWhereInput
+  hasTarget_none: HasTargetWhereInput
+  hasProperty_every: HasPropertyWhereInput
+  hasProperty_some: HasPropertyWhereInput
+  hasProperty_none: HasPropertyWhereInput
+  hasResolver_every: HasResolverWhereInput
+  hasResolver_some: HasResolverWhereInput
+  hasResolver_none: HasResolverWhereInput
 }
 
 input LinkWhereUniqueInput {
@@ -1723,10 +2594,14 @@ Long can represent values between -(2^63) and 2^63 - 1.
 scalar Long
 
 type Mutation {
-  createEntity: Entity!
-  createResource: Resource!
-  createSelector: Selector!
-  createLink: Link!
+  createEntity(data: EntityCreateInput!): Entity!
+  createEntityItem(data: EntityItemCreateInput!): EntityItem!
+  createResource(data: ResourceCreateInput!): Resource!
+  createResourceItem(data: ResourceItemCreateInput!): ResourceItem!
+  createSelector(data: SelectorCreateInput!): Selector!
+  createSelectorItem(data: SelectorItemCreateInput!): SelectorItem!
+  createLink(data: LinkCreateInput!): Link!
+  createLinkItem(data: LinkItemCreateInput!): LinkItem!
   createProperty(data: PropertyCreateInput!): Property!
   createContextResolver: ContextResolver!
   createHasProperty(data: HasPropertyCreateInput!): HasProperty!
@@ -1736,6 +2611,14 @@ type Mutation {
   createRefersTo(data: RefersToCreateInput!): RefersTo!
   createPost(data: PostCreateInput!): Post!
   createUser(data: UserCreateInput!): User!
+  updateEntity(data: EntityUpdateInput!, where: EntityWhereUniqueInput!): Entity
+  updateEntityItem(data: EntityItemUpdateInput!, where: EntityItemWhereUniqueInput!): EntityItem
+  updateResource(data: ResourceUpdateInput!, where: ResourceWhereUniqueInput!): Resource
+  updateResourceItem(data: ResourceItemUpdateInput!, where: ResourceItemWhereUniqueInput!): ResourceItem
+  updateSelector(data: SelectorUpdateInput!, where: SelectorWhereUniqueInput!): Selector
+  updateSelectorItem(data: SelectorItemUpdateInput!, where: SelectorItemWhereUniqueInput!): SelectorItem
+  updateLink(data: LinkUpdateInput!, where: LinkWhereUniqueInput!): Link
+  updateLinkItem(data: LinkItemUpdateInput!, where: LinkItemWhereUniqueInput!): LinkItem
   updateProperty(data: PropertyUpdateInput!, where: PropertyWhereUniqueInput!): Property
   updateHasProperty(data: HasPropertyUpdateInput!, where: HasPropertyWhereUniqueInput!): HasProperty
   updateHasResolver(data: HasResolverUpdateInput!, where: HasResolverWhereUniqueInput!): HasResolver
@@ -1745,9 +2628,13 @@ type Mutation {
   updatePost(data: PostUpdateInput!, where: PostWhereUniqueInput!): Post
   updateUser(data: UserUpdateInput!, where: UserWhereUniqueInput!): User
   deleteEntity(where: EntityWhereUniqueInput!): Entity
+  deleteEntityItem(where: EntityItemWhereUniqueInput!): EntityItem
   deleteResource(where: ResourceWhereUniqueInput!): Resource
+  deleteResourceItem(where: ResourceItemWhereUniqueInput!): ResourceItem
   deleteSelector(where: SelectorWhereUniqueInput!): Selector
+  deleteSelectorItem(where: SelectorItemWhereUniqueInput!): SelectorItem
   deleteLink(where: LinkWhereUniqueInput!): Link
+  deleteLinkItem(where: LinkItemWhereUniqueInput!): LinkItem
   deleteProperty(where: PropertyWhereUniqueInput!): Property
   deleteContextResolver(where: ContextResolverWhereUniqueInput!): ContextResolver
   deleteHasProperty(where: HasPropertyWhereUniqueInput!): HasProperty
@@ -1757,6 +2644,14 @@ type Mutation {
   deleteRefersTo(where: RefersToWhereUniqueInput!): RefersTo
   deletePost(where: PostWhereUniqueInput!): Post
   deleteUser(where: UserWhereUniqueInput!): User
+  upsertEntity(where: EntityWhereUniqueInput!, create: EntityCreateInput!, update: EntityUpdateInput!): Entity!
+  upsertEntityItem(where: EntityItemWhereUniqueInput!, create: EntityItemCreateInput!, update: EntityItemUpdateInput!): EntityItem!
+  upsertResource(where: ResourceWhereUniqueInput!, create: ResourceCreateInput!, update: ResourceUpdateInput!): Resource!
+  upsertResourceItem(where: ResourceItemWhereUniqueInput!, create: ResourceItemCreateInput!, update: ResourceItemUpdateInput!): ResourceItem!
+  upsertSelector(where: SelectorWhereUniqueInput!, create: SelectorCreateInput!, update: SelectorUpdateInput!): Selector!
+  upsertSelectorItem(where: SelectorItemWhereUniqueInput!, create: SelectorItemCreateInput!, update: SelectorItemUpdateInput!): SelectorItem!
+  upsertLink(where: LinkWhereUniqueInput!, create: LinkCreateInput!, update: LinkUpdateInput!): Link!
+  upsertLinkItem(where: LinkItemWhereUniqueInput!, create: LinkItemCreateInput!, update: LinkItemUpdateInput!): LinkItem!
   upsertProperty(where: PropertyWhereUniqueInput!, create: PropertyCreateInput!, update: PropertyUpdateInput!): Property!
   upsertHasProperty(where: HasPropertyWhereUniqueInput!, create: HasPropertyCreateInput!, update: HasPropertyUpdateInput!): HasProperty!
   upsertHasResolver(where: HasResolverWhereUniqueInput!, create: HasResolverCreateInput!, update: HasResolverUpdateInput!): HasResolver!
@@ -1765,6 +2660,14 @@ type Mutation {
   upsertRefersTo(where: RefersToWhereUniqueInput!, create: RefersToCreateInput!, update: RefersToUpdateInput!): RefersTo!
   upsertPost(where: PostWhereUniqueInput!, create: PostCreateInput!, update: PostUpdateInput!): Post!
   upsertUser(where: UserWhereUniqueInput!, create: UserCreateInput!, update: UserUpdateInput!): User!
+  updateManyEntities(data: EntityUpdateInput!, where: EntityWhereInput!): BatchPayload!
+  updateManyEntityItems(data: EntityItemUpdateInput!, where: EntityItemWhereInput!): BatchPayload!
+  updateManyResources(data: ResourceUpdateInput!, where: ResourceWhereInput!): BatchPayload!
+  updateManyResourceItems(data: ResourceItemUpdateInput!, where: ResourceItemWhereInput!): BatchPayload!
+  updateManySelectors(data: SelectorUpdateInput!, where: SelectorWhereInput!): BatchPayload!
+  updateManySelectorItems(data: SelectorItemUpdateInput!, where: SelectorItemWhereInput!): BatchPayload!
+  updateManyLinks(data: LinkUpdateInput!, where: LinkWhereInput!): BatchPayload!
+  updateManyLinkItems(data: LinkItemUpdateInput!, where: LinkItemWhereInput!): BatchPayload!
   updateManyProperties(data: PropertyUpdateInput!, where: PropertyWhereInput!): BatchPayload!
   updateManyHasProperties(data: HasPropertyUpdateInput!, where: HasPropertyWhereInput!): BatchPayload!
   updateManyHasResolvers(data: HasResolverUpdateInput!, where: HasResolverWhereInput!): BatchPayload!
@@ -1774,9 +2677,13 @@ type Mutation {
   updateManyPosts(data: PostUpdateInput!, where: PostWhereInput!): BatchPayload!
   updateManyUsers(data: UserUpdateInput!, where: UserWhereInput!): BatchPayload!
   deleteManyEntities(where: EntityWhereInput!): BatchPayload!
+  deleteManyEntityItems(where: EntityItemWhereInput!): BatchPayload!
   deleteManyResources(where: ResourceWhereInput!): BatchPayload!
+  deleteManyResourceItems(where: ResourceItemWhereInput!): BatchPayload!
   deleteManySelectors(where: SelectorWhereInput!): BatchPayload!
+  deleteManySelectorItems(where: SelectorItemWhereInput!): BatchPayload!
   deleteManyLinks(where: LinkWhereInput!): BatchPayload!
+  deleteManyLinkItems(where: LinkItemWhereInput!): BatchPayload!
   deleteManyProperties(where: PropertyWhereInput!): BatchPayload!
   deleteManyContextResolvers(where: ContextResolverWhereInput!): BatchPayload!
   deleteManyHasProperties(where: HasPropertyWhereInput!): BatchPayload!
@@ -2562,9 +3469,13 @@ input PropertyWhereUniqueInput {
 
 type Query {
   entities(where: EntityWhereInput, orderBy: EntityOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Entity]!
+  entityItems(where: EntityItemWhereInput, orderBy: EntityItemOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [EntityItem]!
   resources(where: ResourceWhereInput, orderBy: ResourceOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Resource]!
+  resourceItems(where: ResourceItemWhereInput, orderBy: ResourceItemOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [ResourceItem]!
   selectors(where: SelectorWhereInput, orderBy: SelectorOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Selector]!
+  selectorItems(where: SelectorItemWhereInput, orderBy: SelectorItemOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [SelectorItem]!
   links(where: LinkWhereInput, orderBy: LinkOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Link]!
+  linkItems(where: LinkItemWhereInput, orderBy: LinkItemOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [LinkItem]!
   properties(where: PropertyWhereInput, orderBy: PropertyOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Property]!
   contextResolvers(where: ContextResolverWhereInput, orderBy: ContextResolverOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [ContextResolver]!
   hasProperties(where: HasPropertyWhereInput, orderBy: HasPropertyOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [HasProperty]!
@@ -2575,9 +3486,13 @@ type Query {
   posts(where: PostWhereInput, orderBy: PostOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Post]!
   users(where: UserWhereInput, orderBy: UserOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [User]!
   entity(where: EntityWhereUniqueInput!): Entity
+  entityItem(where: EntityItemWhereUniqueInput!): EntityItem
   resource(where: ResourceWhereUniqueInput!): Resource
+  resourceItem(where: ResourceItemWhereUniqueInput!): ResourceItem
   selector(where: SelectorWhereUniqueInput!): Selector
+  selectorItem(where: SelectorItemWhereUniqueInput!): SelectorItem
   link(where: LinkWhereUniqueInput!): Link
+  linkItem(where: LinkItemWhereUniqueInput!): LinkItem
   property(where: PropertyWhereUniqueInput!): Property
   contextResolver(where: ContextResolverWhereUniqueInput!): ContextResolver
   hasProperty(where: HasPropertyWhereUniqueInput!): HasProperty
@@ -2588,9 +3503,13 @@ type Query {
   post(where: PostWhereUniqueInput!): Post
   user(where: UserWhereUniqueInput!): User
   entitiesConnection(where: EntityWhereInput, orderBy: EntityOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): EntityConnection!
+  entityItemsConnection(where: EntityItemWhereInput, orderBy: EntityItemOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): EntityItemConnection!
   resourcesConnection(where: ResourceWhereInput, orderBy: ResourceOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): ResourceConnection!
+  resourceItemsConnection(where: ResourceItemWhereInput, orderBy: ResourceItemOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): ResourceItemConnection!
   selectorsConnection(where: SelectorWhereInput, orderBy: SelectorOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): SelectorConnection!
+  selectorItemsConnection(where: SelectorItemWhereInput, orderBy: SelectorItemOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): SelectorItemConnection!
   linksConnection(where: LinkWhereInput, orderBy: LinkOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): LinkConnection!
+  linkItemsConnection(where: LinkItemWhereInput, orderBy: LinkItemOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): LinkItemConnection!
   propertiesConnection(where: PropertyWhereInput, orderBy: PropertyOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): PropertyConnection!
   contextResolversConnection(where: ContextResolverWhereInput, orderBy: ContextResolverOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): ContextResolverConnection!
   hasPropertiesConnection(where: HasPropertyWhereInput, orderBy: HasPropertyOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): HasPropertyConnection!
@@ -2625,7 +3544,21 @@ type RefersToConnection {
 }
 
 input RefersToCreateInput {
-  source: SelectorCreateOneInput!
+  source: SelectorCreateOneWithoutRefersToInput!
+  targets: ResourceCreateManyInput
+}
+
+input RefersToCreateOneInput {
+  create: RefersToCreateInput
+  connect: RefersToWhereUniqueInput
+}
+
+input RefersToCreateOneWithoutSourceInput {
+  create: RefersToCreateWithoutSourceInput
+  connect: RefersToWhereUniqueInput
+}
+
+input RefersToCreateWithoutSourceInput {
   targets: ResourceCreateManyInput
 }
 
@@ -2693,9 +3626,46 @@ input RefersToSubscriptionWhereInput {
   node: RefersToWhereInput
 }
 
-input RefersToUpdateInput {
-  source: SelectorUpdateOneInput
+input RefersToUpdateDataInput {
+  source: SelectorUpdateOneWithoutRefersToInput
   targets: ResourceUpdateManyInput
+}
+
+input RefersToUpdateInput {
+  source: SelectorUpdateOneWithoutRefersToInput
+  targets: ResourceUpdateManyInput
+}
+
+input RefersToUpdateOneInput {
+  create: RefersToCreateInput
+  connect: RefersToWhereUniqueInput
+  disconnect: Boolean
+  delete: Boolean
+  update: RefersToUpdateDataInput
+  upsert: RefersToUpsertNestedInput
+}
+
+input RefersToUpdateOneWithoutSourceInput {
+  create: RefersToCreateWithoutSourceInput
+  connect: RefersToWhereUniqueInput
+  disconnect: Boolean
+  delete: Boolean
+  update: RefersToUpdateWithoutSourceDataInput
+  upsert: RefersToUpsertWithoutSourceInput
+}
+
+input RefersToUpdateWithoutSourceDataInput {
+  targets: ResourceUpdateManyInput
+}
+
+input RefersToUpsertNestedInput {
+  update: RefersToUpdateDataInput!
+  create: RefersToCreateInput!
+}
+
+input RefersToUpsertWithoutSourceInput {
+  update: RefersToUpdateWithoutSourceDataInput!
+  create: RefersToCreateWithoutSourceInput!
 }
 
 input RefersToWhereInput {
@@ -2843,8 +3813,19 @@ type ResourceConnection {
   aggregate: AggregateResource!
 }
 
+input ResourceCreateInput {
+  hasProperty: HasPropertyCreateManyInput
+  hasResolver: HasResolverCreateManyInput
+}
+
 input ResourceCreateManyInput {
+  create: [ResourceCreateInput!]
   connect: [ResourceWhereUniqueInput!]
+}
+
+input ResourceCreateOneInput {
+  create: ResourceCreateInput
+  connect: ResourceWhereUniqueInput
 }
 
 """
@@ -2859,6 +3840,230 @@ type ResourceEdge {
   A cursor for use in pagination.
   """
   cursor: String!
+}
+
+"""
+A connection to a list of items.
+"""
+type ResourceItemConnection {
+  """
+  Information to aid in pagination.
+  """
+  pageInfo: PageInfo!
+  """
+  A list of edges.
+  """
+  edges: [ResourceItemEdge]!
+  aggregate: AggregateResourceItem!
+}
+
+input ResourceItemCreateInput {
+  ref: ResourceCreateOneInput!
+  hasProperty: HasPropertyCreateManyInput
+  hasResolver: HasResolverCreateManyInput
+}
+
+"""
+An edge in a connection.
+"""
+type ResourceItemEdge {
+  """
+  The item at the end of the edge.
+  """
+  node: ResourceItem!
+  """
+  A cursor for use in pagination.
+  """
+  cursor: String!
+}
+
+enum ResourceItemOrderByInput {
+  id_ASC
+  id_DESC
+  createdAt_ASC
+  createdAt_DESC
+  updatedAt_ASC
+  updatedAt_DESC
+}
+
+type ResourceItemPreviousValues {
+  id: ID!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+type ResourceItemSubscriptionPayload {
+  mutation: MutationType!
+  node: ResourceItem
+  updatedFields: [String!]
+  previousValues: ResourceItemPreviousValues
+}
+
+input ResourceItemSubscriptionWhereInput {
+  """
+  Logical AND on all given filters.
+  """
+  AND: [ResourceItemSubscriptionWhereInput!]
+  """
+  Logical OR on all given filters.
+  """
+  OR: [ResourceItemSubscriptionWhereInput!]
+  """
+  The subscription event gets dispatched when it's listed in mutation_in
+  """
+  mutation_in: [MutationType!]
+  """
+  The subscription event gets only dispatched when one of the updated fields names is included in this list
+  """
+  updatedFields_contains: String
+  """
+  The subscription event gets only dispatched when all of the field names included in this list have been updated
+  """
+  updatedFields_contains_every: [String!]
+  """
+  The subscription event gets only dispatched when some of the field names included in this list have been updated
+  """
+  updatedFields_contains_some: [String!]
+  node: ResourceItemWhereInput
+}
+
+input ResourceItemUpdateInput {
+  ref: ResourceUpdateOneInput
+  hasProperty: HasPropertyUpdateManyInput
+  hasResolver: HasResolverUpdateManyInput
+}
+
+input ResourceItemWhereInput {
+  """
+  Logical AND on all given filters.
+  """
+  AND: [ResourceItemWhereInput!]
+  """
+  Logical OR on all given filters.
+  """
+  OR: [ResourceItemWhereInput!]
+  id: ID
+  """
+  All values that are not equal to given value.
+  """
+  id_not: ID
+  """
+  All values that are contained in given list.
+  """
+  id_in: [ID!]
+  """
+  All values that are not contained in given list.
+  """
+  id_not_in: [ID!]
+  """
+  All values less than the given value.
+  """
+  id_lt: ID
+  """
+  All values less than or equal the given value.
+  """
+  id_lte: ID
+  """
+  All values greater than the given value.
+  """
+  id_gt: ID
+  """
+  All values greater than or equal the given value.
+  """
+  id_gte: ID
+  """
+  All values containing the given string.
+  """
+  id_contains: ID
+  """
+  All values not containing the given string.
+  """
+  id_not_contains: ID
+  """
+  All values starting with the given string.
+  """
+  id_starts_with: ID
+  """
+  All values not starting with the given string.
+  """
+  id_not_starts_with: ID
+  """
+  All values ending with the given string.
+  """
+  id_ends_with: ID
+  """
+  All values not ending with the given string.
+  """
+  id_not_ends_with: ID
+  createdAt: DateTime
+  """
+  All values that are not equal to given value.
+  """
+  createdAt_not: DateTime
+  """
+  All values that are contained in given list.
+  """
+  createdAt_in: [DateTime!]
+  """
+  All values that are not contained in given list.
+  """
+  createdAt_not_in: [DateTime!]
+  """
+  All values less than the given value.
+  """
+  createdAt_lt: DateTime
+  """
+  All values less than or equal the given value.
+  """
+  createdAt_lte: DateTime
+  """
+  All values greater than the given value.
+  """
+  createdAt_gt: DateTime
+  """
+  All values greater than or equal the given value.
+  """
+  createdAt_gte: DateTime
+  updatedAt: DateTime
+  """
+  All values that are not equal to given value.
+  """
+  updatedAt_not: DateTime
+  """
+  All values that are contained in given list.
+  """
+  updatedAt_in: [DateTime!]
+  """
+  All values that are not contained in given list.
+  """
+  updatedAt_not_in: [DateTime!]
+  """
+  All values less than the given value.
+  """
+  updatedAt_lt: DateTime
+  """
+  All values less than or equal the given value.
+  """
+  updatedAt_lte: DateTime
+  """
+  All values greater than the given value.
+  """
+  updatedAt_gt: DateTime
+  """
+  All values greater than or equal the given value.
+  """
+  updatedAt_gte: DateTime
+  ref: ResourceWhereInput
+  hasProperty_every: HasPropertyWhereInput
+  hasProperty_some: HasPropertyWhereInput
+  hasProperty_none: HasPropertyWhereInput
+  hasResolver_every: HasResolverWhereInput
+  hasResolver_some: HasResolverWhereInput
+  hasResolver_none: HasResolverWhereInput
+}
+
+input ResourceItemWhereUniqueInput {
+  id: ID
 }
 
 enum ResourceOrderByInput {
@@ -2911,10 +4116,48 @@ input ResourceSubscriptionWhereInput {
   node: ResourceWhereInput
 }
 
+input ResourceUpdateDataInput {
+  hasProperty: HasPropertyUpdateManyInput
+  hasResolver: HasResolverUpdateManyInput
+}
+
+input ResourceUpdateInput {
+  hasProperty: HasPropertyUpdateManyInput
+  hasResolver: HasResolverUpdateManyInput
+}
+
 input ResourceUpdateManyInput {
+  create: [ResourceCreateInput!]
   connect: [ResourceWhereUniqueInput!]
   disconnect: [ResourceWhereUniqueInput!]
   delete: [ResourceWhereUniqueInput!]
+  update: [ResourceUpdateWithWhereUniqueNestedInput!]
+  upsert: [ResourceUpsertWithWhereUniqueNestedInput!]
+}
+
+input ResourceUpdateOneInput {
+  create: ResourceCreateInput
+  connect: ResourceWhereUniqueInput
+  disconnect: Boolean
+  delete: Boolean
+  update: ResourceUpdateDataInput
+  upsert: ResourceUpsertNestedInput
+}
+
+input ResourceUpdateWithWhereUniqueNestedInput {
+  where: ResourceWhereUniqueInput!
+  data: ResourceUpdateDataInput!
+}
+
+input ResourceUpsertNestedInput {
+  update: ResourceUpdateDataInput!
+  create: ResourceCreateInput!
+}
+
+input ResourceUpsertWithWhereUniqueNestedInput {
+  where: ResourceWhereUniqueInput!
+  update: ResourceUpdateDataInput!
+  create: ResourceCreateInput!
 }
 
 input ResourceWhereInput {
@@ -3037,6 +4280,12 @@ input ResourceWhereInput {
   All values greater than or equal the given value.
   """
   updatedAt_gte: DateTime
+  hasProperty_every: HasPropertyWhereInput
+  hasProperty_some: HasPropertyWhereInput
+  hasProperty_none: HasPropertyWhereInput
+  hasResolver_every: HasResolverWhereInput
+  hasResolver_some: HasResolverWhereInput
+  hasResolver_none: HasResolverWhereInput
 }
 
 input ResourceWhereUniqueInput {
@@ -3058,8 +4307,25 @@ type SelectorConnection {
   aggregate: AggregateSelector!
 }
 
+input SelectorCreateInput {
+  refersTo: RefersToCreateOneWithoutSourceInput!
+  hasProperty: HasPropertyCreateManyInput
+  hasResolver: HasResolverCreateManyInput
+}
+
 input SelectorCreateOneInput {
+  create: SelectorCreateInput
   connect: SelectorWhereUniqueInput
+}
+
+input SelectorCreateOneWithoutRefersToInput {
+  create: SelectorCreateWithoutRefersToInput
+  connect: SelectorWhereUniqueInput
+}
+
+input SelectorCreateWithoutRefersToInput {
+  hasProperty: HasPropertyCreateManyInput
+  hasResolver: HasResolverCreateManyInput
 }
 
 """
@@ -3074,6 +4340,233 @@ type SelectorEdge {
   A cursor for use in pagination.
   """
   cursor: String!
+}
+
+"""
+A connection to a list of items.
+"""
+type SelectorItemConnection {
+  """
+  Information to aid in pagination.
+  """
+  pageInfo: PageInfo!
+  """
+  A list of edges.
+  """
+  edges: [SelectorItemEdge]!
+  aggregate: AggregateSelectorItem!
+}
+
+input SelectorItemCreateInput {
+  ref: SelectorCreateOneInput!
+  refersTo: RefersToCreateOneInput!
+  hasProperty: HasPropertyCreateManyInput
+  hasResolver: HasResolverCreateManyInput
+}
+
+"""
+An edge in a connection.
+"""
+type SelectorItemEdge {
+  """
+  The item at the end of the edge.
+  """
+  node: SelectorItem!
+  """
+  A cursor for use in pagination.
+  """
+  cursor: String!
+}
+
+enum SelectorItemOrderByInput {
+  id_ASC
+  id_DESC
+  createdAt_ASC
+  createdAt_DESC
+  updatedAt_ASC
+  updatedAt_DESC
+}
+
+type SelectorItemPreviousValues {
+  id: ID!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+type SelectorItemSubscriptionPayload {
+  mutation: MutationType!
+  node: SelectorItem
+  updatedFields: [String!]
+  previousValues: SelectorItemPreviousValues
+}
+
+input SelectorItemSubscriptionWhereInput {
+  """
+  Logical AND on all given filters.
+  """
+  AND: [SelectorItemSubscriptionWhereInput!]
+  """
+  Logical OR on all given filters.
+  """
+  OR: [SelectorItemSubscriptionWhereInput!]
+  """
+  The subscription event gets dispatched when it's listed in mutation_in
+  """
+  mutation_in: [MutationType!]
+  """
+  The subscription event gets only dispatched when one of the updated fields names is included in this list
+  """
+  updatedFields_contains: String
+  """
+  The subscription event gets only dispatched when all of the field names included in this list have been updated
+  """
+  updatedFields_contains_every: [String!]
+  """
+  The subscription event gets only dispatched when some of the field names included in this list have been updated
+  """
+  updatedFields_contains_some: [String!]
+  node: SelectorItemWhereInput
+}
+
+input SelectorItemUpdateInput {
+  ref: SelectorUpdateOneInput
+  refersTo: RefersToUpdateOneInput
+  hasProperty: HasPropertyUpdateManyInput
+  hasResolver: HasResolverUpdateManyInput
+}
+
+input SelectorItemWhereInput {
+  """
+  Logical AND on all given filters.
+  """
+  AND: [SelectorItemWhereInput!]
+  """
+  Logical OR on all given filters.
+  """
+  OR: [SelectorItemWhereInput!]
+  id: ID
+  """
+  All values that are not equal to given value.
+  """
+  id_not: ID
+  """
+  All values that are contained in given list.
+  """
+  id_in: [ID!]
+  """
+  All values that are not contained in given list.
+  """
+  id_not_in: [ID!]
+  """
+  All values less than the given value.
+  """
+  id_lt: ID
+  """
+  All values less than or equal the given value.
+  """
+  id_lte: ID
+  """
+  All values greater than the given value.
+  """
+  id_gt: ID
+  """
+  All values greater than or equal the given value.
+  """
+  id_gte: ID
+  """
+  All values containing the given string.
+  """
+  id_contains: ID
+  """
+  All values not containing the given string.
+  """
+  id_not_contains: ID
+  """
+  All values starting with the given string.
+  """
+  id_starts_with: ID
+  """
+  All values not starting with the given string.
+  """
+  id_not_starts_with: ID
+  """
+  All values ending with the given string.
+  """
+  id_ends_with: ID
+  """
+  All values not ending with the given string.
+  """
+  id_not_ends_with: ID
+  createdAt: DateTime
+  """
+  All values that are not equal to given value.
+  """
+  createdAt_not: DateTime
+  """
+  All values that are contained in given list.
+  """
+  createdAt_in: [DateTime!]
+  """
+  All values that are not contained in given list.
+  """
+  createdAt_not_in: [DateTime!]
+  """
+  All values less than the given value.
+  """
+  createdAt_lt: DateTime
+  """
+  All values less than or equal the given value.
+  """
+  createdAt_lte: DateTime
+  """
+  All values greater than the given value.
+  """
+  createdAt_gt: DateTime
+  """
+  All values greater than or equal the given value.
+  """
+  createdAt_gte: DateTime
+  updatedAt: DateTime
+  """
+  All values that are not equal to given value.
+  """
+  updatedAt_not: DateTime
+  """
+  All values that are contained in given list.
+  """
+  updatedAt_in: [DateTime!]
+  """
+  All values that are not contained in given list.
+  """
+  updatedAt_not_in: [DateTime!]
+  """
+  All values less than the given value.
+  """
+  updatedAt_lt: DateTime
+  """
+  All values less than or equal the given value.
+  """
+  updatedAt_lte: DateTime
+  """
+  All values greater than the given value.
+  """
+  updatedAt_gt: DateTime
+  """
+  All values greater than or equal the given value.
+  """
+  updatedAt_gte: DateTime
+  ref: SelectorWhereInput
+  refersTo: RefersToWhereInput
+  hasProperty_every: HasPropertyWhereInput
+  hasProperty_some: HasPropertyWhereInput
+  hasProperty_none: HasPropertyWhereInput
+  hasResolver_every: HasResolverWhereInput
+  hasResolver_some: HasResolverWhereInput
+  hasResolver_none: HasResolverWhereInput
+}
+
+input SelectorItemWhereUniqueInput {
+  id: ID
 }
 
 enum SelectorOrderByInput {
@@ -3126,10 +4619,49 @@ input SelectorSubscriptionWhereInput {
   node: SelectorWhereInput
 }
 
+input SelectorUpdateDataInput {
+  refersTo: RefersToUpdateOneWithoutSourceInput
+  hasProperty: HasPropertyUpdateManyInput
+  hasResolver: HasResolverUpdateManyInput
+}
+
+input SelectorUpdateInput {
+  refersTo: RefersToUpdateOneWithoutSourceInput
+  hasProperty: HasPropertyUpdateManyInput
+  hasResolver: HasResolverUpdateManyInput
+}
+
 input SelectorUpdateOneInput {
+  create: SelectorCreateInput
   connect: SelectorWhereUniqueInput
   disconnect: Boolean
   delete: Boolean
+  update: SelectorUpdateDataInput
+  upsert: SelectorUpsertNestedInput
+}
+
+input SelectorUpdateOneWithoutRefersToInput {
+  create: SelectorCreateWithoutRefersToInput
+  connect: SelectorWhereUniqueInput
+  disconnect: Boolean
+  delete: Boolean
+  update: SelectorUpdateWithoutRefersToDataInput
+  upsert: SelectorUpsertWithoutRefersToInput
+}
+
+input SelectorUpdateWithoutRefersToDataInput {
+  hasProperty: HasPropertyUpdateManyInput
+  hasResolver: HasResolverUpdateManyInput
+}
+
+input SelectorUpsertNestedInput {
+  update: SelectorUpdateDataInput!
+  create: SelectorCreateInput!
+}
+
+input SelectorUpsertWithoutRefersToInput {
+  update: SelectorUpdateWithoutRefersToDataInput!
+  create: SelectorCreateWithoutRefersToInput!
 }
 
 input SelectorWhereInput {
@@ -3252,6 +4784,13 @@ input SelectorWhereInput {
   All values greater than or equal the given value.
   """
   updatedAt_gte: DateTime
+  refersTo: RefersToWhereInput
+  hasProperty_every: HasPropertyWhereInput
+  hasProperty_some: HasPropertyWhereInput
+  hasProperty_none: HasPropertyWhereInput
+  hasResolver_every: HasResolverWhereInput
+  hasResolver_some: HasResolverWhereInput
+  hasResolver_none: HasResolverWhereInput
 }
 
 input SelectorWhereUniqueInput {
@@ -3260,9 +4799,13 @@ input SelectorWhereUniqueInput {
 
 type Subscription {
   entity(where: EntitySubscriptionWhereInput): EntitySubscriptionPayload
+  entityItem(where: EntityItemSubscriptionWhereInput): EntityItemSubscriptionPayload
   resource(where: ResourceSubscriptionWhereInput): ResourceSubscriptionPayload
+  resourceItem(where: ResourceItemSubscriptionWhereInput): ResourceItemSubscriptionPayload
   selector(where: SelectorSubscriptionWhereInput): SelectorSubscriptionPayload
+  selectorItem(where: SelectorItemSubscriptionWhereInput): SelectorItemSubscriptionPayload
   link(where: LinkSubscriptionWhereInput): LinkSubscriptionPayload
+  linkItem(where: LinkItemSubscriptionWhereInput): LinkItemSubscriptionPayload
   property(where: PropertySubscriptionWhereInput): PropertySubscriptionPayload
   contextResolver(where: ContextResolverSubscriptionWhereInput): ContextResolverSubscriptionPayload
   hasProperty(where: HasPropertySubscriptionWhereInput): HasPropertySubscriptionPayload

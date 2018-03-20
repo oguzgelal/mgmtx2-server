@@ -1,6 +1,12 @@
 type Selector {
   id: ID! @unique
 
+  refersTo: RefersTo!
+
+  # inherited from Entity
+  hasProperty: [HasProperty!]!
+  hasResolver: [HasResolver!]!
+
   createdAt: DateTime!
   updatedAt: DateTime!
 }

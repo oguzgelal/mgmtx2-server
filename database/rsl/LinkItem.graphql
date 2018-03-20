@@ -1,5 +1,6 @@
-type Link {
+type LinkItem {
   id: ID! @unique
+  ref: Link!
 
   hasSource: [HasSource!]!
   hasTarget: [HasTarget!]!

@@ -12,9 +12,13 @@ secret: ${env:PRISMA_SECRET}
 datamodel:
   - ./rsl/Entity.graphql
   - ./rsl/EntityType.graphql
+  - ./rsl/EntityItem.graphql
   - ./rsl/Resource.graphql
+  - ./rsl/ResourceItem.graphql
   - ./rsl/Selector.graphql
+  - ./rsl/SelectorItem.graphql
   - ./rsl/Link.graphql
+  - ./rsl/LinkItem.graphql
   - ./rsl/Property.graphql
   - ./rsl/ContextResolver.graphql
   - ./rsl/relations/HasProperty.graphql

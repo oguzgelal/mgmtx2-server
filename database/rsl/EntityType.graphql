@@ -1,5 +1,10 @@
 enum EntityType {
+  Entity,
+  EntityItem,
   Resource,
+  ResourceItem,
   Selector,
-  Link
+  SelectorItem,
+  Link,
+  LinkItem
 }

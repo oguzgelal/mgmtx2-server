@@ -1,6 +1,9 @@
 type Entity {
   id: ID! @unique
 
+  hasProperty: [HasProperty!]!
+  hasResolver: [HasResolver!]!
+
   createdAt: DateTime!
   updatedAt: DateTime!
 }

@@ -1,8 +1,6 @@
-type Link {
+type ResourceItem {
   id: ID! @unique
-
-  hasSource: [HasSource!]!
-  hasTarget: [HasTarget!]!
+  ref: Resource!
 
   # inherited from Entity
   hasProperty: [HasProperty!]!

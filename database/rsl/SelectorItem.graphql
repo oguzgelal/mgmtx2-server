@@ -1,8 +1,8 @@
-type Link {
+type SelectorItem {
   id: ID! @unique
+  ref: Selector!
 
-  hasSource: [HasSource!]!
-  hasTarget: [HasTarget!]!
+  refersTo: RefersTo!
 
   # inherited from Entity
   hasProperty: [HasProperty!]!
