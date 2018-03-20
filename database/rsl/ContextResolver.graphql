@@ -1,0 +1,5 @@
+type ContextResolver {
+  id: ID! @unique
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}

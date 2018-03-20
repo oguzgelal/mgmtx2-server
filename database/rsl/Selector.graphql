@@ -1,0 +1,6 @@
+type Selector {
+  id: ID! @unique
+
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}

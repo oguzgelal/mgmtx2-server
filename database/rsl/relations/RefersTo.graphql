@@ -1,0 +1,9 @@
+type RefersTo {
+  id: ID! @unique
+
+  source: Selector!
+  targets: [Resource!]!
+
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}

@@ -1,0 +1,9 @@
+type HasResolver {
+  id: ID! @unique
+
+  sources: [EntityType!]!
+  targets: [ContextResolver!]!
+
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}

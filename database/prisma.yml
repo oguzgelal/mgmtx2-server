@@ -1,0 +1,31 @@
+# the name for the service (will be part of the service's HTTP endpoint)
+service: mgmtx_server
+
+# the cluster and stage the service is deployed to
+stage: ${env:PRISMA_STAGE}
+
+# to disable authentication:
+# disableAuth: true
+secret: ${env:PRISMA_SECRET}
+
+# the file path pointing to your data model
+datamodel:
+  - ./rsl/Entity.graphql
+  - ./rsl/EntityType.graphql
+  - ./rsl/Resource.graphql
+  - ./rsl/Selector.graphql
+  - ./rsl/Link.graphql
+  - ./rsl/Property.graphql
+  - ./rsl/ContextResolver.graphql
+  - ./rsl/relations/HasProperty.graphql
+  - ./rsl/relations/HasResolver.graphql
+  - ./rsl/relations/HasSource.graphql
+  - ./rsl/relations/HasTarget.graphql
+  - ./rsl/relations/RefersTo.graphql
+  - ./datamodel.graphql
+
+# seed your service with initial data based on seed.graphql
+seed:
+  import: seed.graphql
+
+cluster: ${env:PRISMA_CLUSTER}

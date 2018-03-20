@@ -1,0 +1,6 @@
+type Resource {
+  id: ID! @unique
+
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}

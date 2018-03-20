@@ -1,0 +1,9 @@
+type HasTarget {
+  id: ID! @unique
+
+  sources: [Link!]!
+  targets: [EntityType!]!
+
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}

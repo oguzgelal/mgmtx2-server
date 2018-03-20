@@ -1,0 +1,9 @@
+type HasProperty {
+  id: ID! @unique
+
+  sources: [EntityType!]!
+  targets: [Property!]!
+
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}

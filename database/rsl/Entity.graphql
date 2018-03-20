@@ -1,0 +1,6 @@
+type Entity {
+  id: ID! @unique
+
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}

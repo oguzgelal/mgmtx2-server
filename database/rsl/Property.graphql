@@ -1,0 +1,7 @@
+type Property {
+  id: ID! @unique
+  key: String!
+  value: String!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
