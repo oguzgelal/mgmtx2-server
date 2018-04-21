@@ -1,32 +1,13 @@
-# import Post from "./generated/prisma.graphql"
+scalar JSON
 
 type Query {
-  feed: [Post!]!
-  drafts: [Post!]!
-  post(id: ID!): Post
-  me: User
+  getUserData(token: String!): JsonPayload
 }
 
 type Mutation {
-  signup(email: String!, password: String!, name: String!): AuthPayload!
-  login(email: String!, password: String!): AuthPayload!
-  createDraft(title: String!, text: String!): Post!
-  publish(id: ID!): Post!
-  deletePost(id: ID!): Post!
+  signin(email: String!, password: String!): JsonPayload
 }
 
-type Subscription {
-  feedSubscription: PostSubscriptionPayload!
-}
-
-type AuthPayload {
-  token: String!
-  user: User!
-}
-
-type User {
-  id: ID!
-  email: String!
-  name: String!
-  posts: [Post!]!
+type JsonPayload {
+  data: JSON
 }

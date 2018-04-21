@@ -81,16 +81,6 @@ type LinkItem implements Node {
   updatedAt: DateTime!
 }
 
-type Post implements Node {
-  id: ID!
-  createdAt: DateTime!
-  updatedAt: DateTime!
-  isPublished: Boolean!
-  title: String!
-  text: String!
-  author(where: UserWhereInput): User!
-}
-
 type Property implements Node {
   id: ID!
   key: String!
@@ -145,10 +135,11 @@ type SelectorItem implements Node {
 
 type User implements Node {
   id: ID!
+  name: String
+  password: String
   email: String!
-  password: String!
-  name: String!
-  posts(where: PostWhereInput, orderBy: PostOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Post!]
+  createdAt: DateTime!
+  updatedAt: DateTime!
 }
 
 
@@ -189,10 +180,6 @@ type AggregateLink {
 }
 
 type AggregateLinkItem {
-  count: Int!
-}
-
-type AggregatePost {
   count: Int!
 }
 
@@ -785,7 +772,6 @@ input EntityUpdateInput {
 input EntityUpdateOneInput {
   create: EntityCreateInput
   connect: EntityWhereUniqueInput
-  disconnect: Boolean
   delete: Boolean
   update: EntityUpdateDataInput
   upsert: EntityUpsertNestedInput
@@ -2404,7 +2390,6 @@ input LinkUpdateManyWithoutHasTargetInput {
 input LinkUpdateOneInput {
   create: LinkCreateInput
   connect: LinkWhereUniqueInput
-  disconnect: Boolean
   delete: Boolean
   update: LinkUpdateDataInput
   upsert: LinkUpsertNestedInput
@@ -2594,6 +2579,7 @@ Long can represent values between -(2^63) and 2^63 - 1.
 scalar Long
 
 type Mutation {
+  createUser(data: UserCreateInput!): User!
   createEntity(data: EntityCreateInput!): Entity!
   createEntityItem(data: EntityItemCreateInput!): EntityItem!
   createResource(data: ResourceCreateInput!): Resource!
@@ -2609,8 +2595,7 @@ type Mutation {
   createHasSource(data: HasSourceCreateInput!): HasSource!
   createHasTarget(data: HasTargetCreateInput!): HasTarget!
   createRefersTo(data: RefersToCreateInput!): RefersTo!
-  createPost(data: PostCreateInput!): Post!
-  createUser(data: UserCreateInput!): User!
+  updateUser(data: UserUpdateInput!, where: UserWhereUniqueInput!): User
   updateEntity(data: EntityUpdateInput!, where: EntityWhereUniqueInput!): Entity
   updateEntityItem(data: EntityItemUpdateInput!, where: EntityItemWhereUniqueInput!): EntityItem
   updateResource(data: ResourceUpdateInput!, where: ResourceWhereUniqueInput!): Resource
@@ -2625,8 +2610,7 @@ type Mutation {
   updateHasSource(data: HasSourceUpdateInput!, where: HasSourceWhereUniqueInput!): HasSource
   updateHasTarget(data: HasTargetUpdateInput!, where: HasTargetWhereUniqueInput!): HasTarget
   updateRefersTo(data: RefersToUpdateInput!, where: RefersToWhereUniqueInput!): RefersTo
-  updatePost(data: PostUpdateInput!, where: PostWhereUniqueInput!): Post
-  updateUser(data: UserUpdateInput!, where: UserWhereUniqueInput!): User
+  deleteUser(where: UserWhereUniqueInput!): User
   deleteEntity(where: EntityWhereUniqueInput!): Entity
   deleteEntityItem(where: EntityItemWhereUniqueInput!): EntityItem
   deleteResource(where: ResourceWhereUniqueInput!): Resource
@@ -2642,8 +2626,7 @@ type Mutation {
   deleteHasSource(where: HasSourceWhereUniqueInput!): HasSource
   deleteHasTarget(where: HasTargetWhereUniqueInput!): HasTarget
   deleteRefersTo(where: RefersToWhereUniqueInput!): RefersTo
-  deletePost(where: PostWhereUniqueInput!): Post
-  deleteUser(where: UserWhereUniqueInput!): User
+  upsertUser(where: UserWhereUniqueInput!, create: UserCreateInput!, update: UserUpdateInput!): User!
   upsertEntity(where: EntityWhereUniqueInput!, create: EntityCreateInput!, update: EntityUpdateInput!): Entity!
   upsertEntityItem(where: EntityItemWhereUniqueInput!, create: EntityItemCreateInput!, update: EntityItemUpdateInput!): EntityItem!
   upsertResource(where: ResourceWhereUniqueInput!, create: ResourceCreateInput!, update: ResourceUpdateInput!): Resource!
@@ -2658,41 +2641,37 @@ type Mutation {
   upsertHasSource(where: HasSourceWhereUniqueInput!, create: HasSourceCreateInput!, update: HasSourceUpdateInput!): HasSource!
   upsertHasTarget(where: HasTargetWhereUniqueInput!, create: HasTargetCreateInput!, update: HasTargetUpdateInput!): HasTarget!
   upsertRefersTo(where: RefersToWhereUniqueInput!, create: RefersToCreateInput!, update: RefersToUpdateInput!): RefersTo!
-  upsertPost(where: PostWhereUniqueInput!, create: PostCreateInput!, update: PostUpdateInput!): Post!
-  upsertUser(where: UserWhereUniqueInput!, create: UserCreateInput!, update: UserUpdateInput!): User!
-  updateManyEntities(data: EntityUpdateInput!, where: EntityWhereInput!): BatchPayload!
-  updateManyEntityItems(data: EntityItemUpdateInput!, where: EntityItemWhereInput!): BatchPayload!
-  updateManyResources(data: ResourceUpdateInput!, where: ResourceWhereInput!): BatchPayload!
-  updateManyResourceItems(data: ResourceItemUpdateInput!, where: ResourceItemWhereInput!): BatchPayload!
-  updateManySelectors(data: SelectorUpdateInput!, where: SelectorWhereInput!): BatchPayload!
-  updateManySelectorItems(data: SelectorItemUpdateInput!, where: SelectorItemWhereInput!): BatchPayload!
-  updateManyLinks(data: LinkUpdateInput!, where: LinkWhereInput!): BatchPayload!
-  updateManyLinkItems(data: LinkItemUpdateInput!, where: LinkItemWhereInput!): BatchPayload!
-  updateManyProperties(data: PropertyUpdateInput!, where: PropertyWhereInput!): BatchPayload!
-  updateManyHasProperties(data: HasPropertyUpdateInput!, where: HasPropertyWhereInput!): BatchPayload!
-  updateManyHasResolvers(data: HasResolverUpdateInput!, where: HasResolverWhereInput!): BatchPayload!
-  updateManyHasSources(data: HasSourceUpdateInput!, where: HasSourceWhereInput!): BatchPayload!
-  updateManyHasTargets(data: HasTargetUpdateInput!, where: HasTargetWhereInput!): BatchPayload!
-  updateManyRefersToes(data: RefersToUpdateInput!, where: RefersToWhereInput!): BatchPayload!
-  updateManyPosts(data: PostUpdateInput!, where: PostWhereInput!): BatchPayload!
-  updateManyUsers(data: UserUpdateInput!, where: UserWhereInput!): BatchPayload!
-  deleteManyEntities(where: EntityWhereInput!): BatchPayload!
-  deleteManyEntityItems(where: EntityItemWhereInput!): BatchPayload!
-  deleteManyResources(where: ResourceWhereInput!): BatchPayload!
-  deleteManyResourceItems(where: ResourceItemWhereInput!): BatchPayload!
-  deleteManySelectors(where: SelectorWhereInput!): BatchPayload!
-  deleteManySelectorItems(where: SelectorItemWhereInput!): BatchPayload!
-  deleteManyLinks(where: LinkWhereInput!): BatchPayload!
-  deleteManyLinkItems(where: LinkItemWhereInput!): BatchPayload!
-  deleteManyProperties(where: PropertyWhereInput!): BatchPayload!
-  deleteManyContextResolvers(where: ContextResolverWhereInput!): BatchPayload!
-  deleteManyHasProperties(where: HasPropertyWhereInput!): BatchPayload!
-  deleteManyHasResolvers(where: HasResolverWhereInput!): BatchPayload!
-  deleteManyHasSources(where: HasSourceWhereInput!): BatchPayload!
-  deleteManyHasTargets(where: HasTargetWhereInput!): BatchPayload!
-  deleteManyRefersToes(where: RefersToWhereInput!): BatchPayload!
-  deleteManyPosts(where: PostWhereInput!): BatchPayload!
-  deleteManyUsers(where: UserWhereInput!): BatchPayload!
+  updateManyUsers(data: UserUpdateInput!, where: UserWhereInput): BatchPayload!
+  updateManyEntities(data: EntityUpdateInput!, where: EntityWhereInput): BatchPayload!
+  updateManyEntityItems(data: EntityItemUpdateInput!, where: EntityItemWhereInput): BatchPayload!
+  updateManyResources(data: ResourceUpdateInput!, where: ResourceWhereInput): BatchPayload!
+  updateManyResourceItems(data: ResourceItemUpdateInput!, where: ResourceItemWhereInput): BatchPayload!
+  updateManySelectors(data: SelectorUpdateInput!, where: SelectorWhereInput): BatchPayload!
+  updateManySelectorItems(data: SelectorItemUpdateInput!, where: SelectorItemWhereInput): BatchPayload!
+  updateManyLinks(data: LinkUpdateInput!, where: LinkWhereInput): BatchPayload!
+  updateManyLinkItems(data: LinkItemUpdateInput!, where: LinkItemWhereInput): BatchPayload!
+  updateManyProperties(data: PropertyUpdateInput!, where: PropertyWhereInput): BatchPayload!
+  updateManyHasProperties(data: HasPropertyUpdateInput!, where: HasPropertyWhereInput): BatchPayload!
+  updateManyHasResolvers(data: HasResolverUpdateInput!, where: HasResolverWhereInput): BatchPayload!
+  updateManyHasSources(data: HasSourceUpdateInput!, where: HasSourceWhereInput): BatchPayload!
+  updateManyHasTargets(data: HasTargetUpdateInput!, where: HasTargetWhereInput): BatchPayload!
+  updateManyRefersToes(data: RefersToUpdateInput!, where: RefersToWhereInput): BatchPayload!
+  deleteManyUsers(where: UserWhereInput): BatchPayload!
+  deleteManyEntities(where: EntityWhereInput): BatchPayload!
+  deleteManyEntityItems(where: EntityItemWhereInput): BatchPayload!
+  deleteManyResources(where: ResourceWhereInput): BatchPayload!
+  deleteManyResourceItems(where: ResourceItemWhereInput): BatchPayload!
+  deleteManySelectors(where: SelectorWhereInput): BatchPayload!
+  deleteManySelectorItems(where: SelectorItemWhereInput): BatchPayload!
+  deleteManyLinks(where: LinkWhereInput): BatchPayload!
+  deleteManyLinkItems(where: LinkItemWhereInput): BatchPayload!
+  deleteManyProperties(where: PropertyWhereInput): BatchPayload!
+  deleteManyContextResolvers(where: ContextResolverWhereInput): BatchPayload!
+  deleteManyHasProperties(where: HasPropertyWhereInput): BatchPayload!
+  deleteManyHasResolvers(where: HasResolverWhereInput): BatchPayload!
+  deleteManyHasSources(where: HasSourceWhereInput): BatchPayload!
+  deleteManyHasTargets(where: HasTargetWhereInput): BatchPayload!
+  deleteManyRefersToes(where: RefersToWhereInput): BatchPayload!
 }
 
 enum MutationType {
@@ -2731,383 +2710,6 @@ type PageInfo {
   When paginating forwards, the cursor to continue.
   """
   endCursor: String
-}
-
-"""
-A connection to a list of items.
-"""
-type PostConnection {
-  """
-  Information to aid in pagination.
-  """
-  pageInfo: PageInfo!
-  """
-  A list of edges.
-  """
-  edges: [PostEdge]!
-  aggregate: AggregatePost!
-}
-
-input PostCreateInput {
-  isPublished: Boolean
-  title: String!
-  text: String!
-  author: UserCreateOneWithoutPostsInput!
-}
-
-input PostCreateManyWithoutAuthorInput {
-  create: [PostCreateWithoutAuthorInput!]
-  connect: [PostWhereUniqueInput!]
-}
-
-input PostCreateWithoutAuthorInput {
-  isPublished: Boolean
-  title: String!
-  text: String!
-}
-
-"""
-An edge in a connection.
-"""
-type PostEdge {
-  """
-  The item at the end of the edge.
-  """
-  node: Post!
-  """
-  A cursor for use in pagination.
-  """
-  cursor: String!
-}
-
-enum PostOrderByInput {
-  id_ASC
-  id_DESC
-  createdAt_ASC
-  createdAt_DESC
-  updatedAt_ASC
-  updatedAt_DESC
-  isPublished_ASC
-  isPublished_DESC
-  title_ASC
-  title_DESC
-  text_ASC
-  text_DESC
-}
-
-type PostPreviousValues {
-  id: ID!
-  createdAt: DateTime!
-  updatedAt: DateTime!
-  isPublished: Boolean!
-  title: String!
-  text: String!
-}
-
-type PostSubscriptionPayload {
-  mutation: MutationType!
-  node: Post
-  updatedFields: [String!]
-  previousValues: PostPreviousValues
-}
-
-input PostSubscriptionWhereInput {
-  """
-  Logical AND on all given filters.
-  """
-  AND: [PostSubscriptionWhereInput!]
-  """
-  Logical OR on all given filters.
-  """
-  OR: [PostSubscriptionWhereInput!]
-  """
-  The subscription event gets dispatched when it's listed in mutation_in
-  """
-  mutation_in: [MutationType!]
-  """
-  The subscription event gets only dispatched when one of the updated fields names is included in this list
-  """
-  updatedFields_contains: String
-  """
-  The subscription event gets only dispatched when all of the field names included in this list have been updated
-  """
-  updatedFields_contains_every: [String!]
-  """
-  The subscription event gets only dispatched when some of the field names included in this list have been updated
-  """
-  updatedFields_contains_some: [String!]
-  node: PostWhereInput
-}
-
-input PostUpdateInput {
-  isPublished: Boolean
-  title: String
-  text: String
-  author: UserUpdateOneWithoutPostsInput
-}
-
-input PostUpdateManyWithoutAuthorInput {
-  create: [PostCreateWithoutAuthorInput!]
-  connect: [PostWhereUniqueInput!]
-  disconnect: [PostWhereUniqueInput!]
-  delete: [PostWhereUniqueInput!]
-  update: [PostUpdateWithWhereUniqueWithoutAuthorInput!]
-  upsert: [PostUpsertWithWhereUniqueWithoutAuthorInput!]
-}
-
-input PostUpdateWithoutAuthorDataInput {
-  isPublished: Boolean
-  title: String
-  text: String
-}
-
-input PostUpdateWithWhereUniqueWithoutAuthorInput {
-  where: PostWhereUniqueInput!
-  data: PostUpdateWithoutAuthorDataInput!
-}
-
-input PostUpsertWithWhereUniqueWithoutAuthorInput {
-  where: PostWhereUniqueInput!
-  update: PostUpdateWithoutAuthorDataInput!
-  create: PostCreateWithoutAuthorInput!
-}
-
-input PostWhereInput {
-  """
-  Logical AND on all given filters.
-  """
-  AND: [PostWhereInput!]
-  """
-  Logical OR on all given filters.
-  """
-  OR: [PostWhereInput!]
-  id: ID
-  """
-  All values that are not equal to given value.
-  """
-  id_not: ID
-  """
-  All values that are contained in given list.
-  """
-  id_in: [ID!]
-  """
-  All values that are not contained in given list.
-  """
-  id_not_in: [ID!]
-  """
-  All values less than the given value.
-  """
-  id_lt: ID
-  """
-  All values less than or equal the given value.
-  """
-  id_lte: ID
-  """
-  All values greater than the given value.
-  """
-  id_gt: ID
-  """
-  All values greater than or equal the given value.
-  """
-  id_gte: ID
-  """
-  All values containing the given string.
-  """
-  id_contains: ID
-  """
-  All values not containing the given string.
-  """
-  id_not_contains: ID
-  """
-  All values starting with the given string.
-  """
-  id_starts_with: ID
-  """
-  All values not starting with the given string.
-  """
-  id_not_starts_with: ID
-  """
-  All values ending with the given string.
-  """
-  id_ends_with: ID
-  """
-  All values not ending with the given string.
-  """
-  id_not_ends_with: ID
-  createdAt: DateTime
-  """
-  All values that are not equal to given value.
-  """
-  createdAt_not: DateTime
-  """
-  All values that are contained in given list.
-  """
-  createdAt_in: [DateTime!]
-  """
-  All values that are not contained in given list.
-  """
-  createdAt_not_in: [DateTime!]
-  """
-  All values less than the given value.
-  """
-  createdAt_lt: DateTime
-  """
-  All values less than or equal the given value.
-  """
-  createdAt_lte: DateTime
-  """
-  All values greater than the given value.
-  """
-  createdAt_gt: DateTime
-  """
-  All values greater than or equal the given value.
-  """
-  createdAt_gte: DateTime
-  updatedAt: DateTime
-  """
-  All values that are not equal to given value.
-  """
-  updatedAt_not: DateTime
-  """
-  All values that are contained in given list.
-  """
-  updatedAt_in: [DateTime!]
-  """
-  All values that are not contained in given list.
-  """
-  updatedAt_not_in: [DateTime!]
-  """
-  All values less than the given value.
-  """
-  updatedAt_lt: DateTime
-  """
-  All values less than or equal the given value.
-  """
-  updatedAt_lte: DateTime
-  """
-  All values greater than the given value.
-  """
-  updatedAt_gt: DateTime
-  """
-  All values greater than or equal the given value.
-  """
-  updatedAt_gte: DateTime
-  isPublished: Boolean
-  """
-  All values that are not equal to given value.
-  """
-  isPublished_not: Boolean
-  title: String
-  """
-  All values that are not equal to given value.
-  """
-  title_not: String
-  """
-  All values that are contained in given list.
-  """
-  title_in: [String!]
-  """
-  All values that are not contained in given list.
-  """
-  title_not_in: [String!]
-  """
-  All values less than the given value.
-  """
-  title_lt: String
-  """
-  All values less than or equal the given value.
-  """
-  title_lte: String
-  """
-  All values greater than the given value.
-  """
-  title_gt: String
-  """
-  All values greater than or equal the given value.
-  """
-  title_gte: String
-  """
-  All values containing the given string.
-  """
-  title_contains: String
-  """
-  All values not containing the given string.
-  """
-  title_not_contains: String
-  """
-  All values starting with the given string.
-  """
-  title_starts_with: String
-  """
-  All values not starting with the given string.
-  """
-  title_not_starts_with: String
-  """
-  All values ending with the given string.
-  """
-  title_ends_with: String
-  """
-  All values not ending with the given string.
-  """
-  title_not_ends_with: String
-  text: String
-  """
-  All values that are not equal to given value.
-  """
-  text_not: String
-  """
-  All values that are contained in given list.
-  """
-  text_in: [String!]
-  """
-  All values that are not contained in given list.
-  """
-  text_not_in: [String!]
-  """
-  All values less than the given value.
-  """
-  text_lt: String
-  """
-  All values less than or equal the given value.
-  """
-  text_lte: String
-  """
-  All values greater than the given value.
-  """
-  text_gt: String
-  """
-  All values greater than or equal the given value.
-  """
-  text_gte: String
-  """
-  All values containing the given string.
-  """
-  text_contains: String
-  """
-  All values not containing the given string.
-  """
-  text_not_contains: String
-  """
-  All values starting with the given string.
-  """
-  text_starts_with: String
-  """
-  All values not starting with the given string.
-  """
-  text_not_starts_with: String
-  """
-  All values ending with the given string.
-  """
-  text_ends_with: String
-  """
-  All values not ending with the given string.
-  """
-  text_not_ends_with: String
-  author: UserWhereInput
-}
-
-input PostWhereUniqueInput {
-  id: ID
 }
 
 """
@@ -3468,6 +3070,7 @@ input PropertyWhereUniqueInput {
 }
 
 type Query {
+  users(where: UserWhereInput, orderBy: UserOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [User]!
   entities(where: EntityWhereInput, orderBy: EntityOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Entity]!
   entityItems(where: EntityItemWhereInput, orderBy: EntityItemOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [EntityItem]!
   resources(where: ResourceWhereInput, orderBy: ResourceOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Resource]!
@@ -3483,8 +3086,7 @@ type Query {
   hasSources(where: HasSourceWhereInput, orderBy: HasSourceOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [HasSource]!
   hasTargets(where: HasTargetWhereInput, orderBy: HasTargetOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [HasTarget]!
   refersToes(where: RefersToWhereInput, orderBy: RefersToOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [RefersTo]!
-  posts(where: PostWhereInput, orderBy: PostOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Post]!
-  users(where: UserWhereInput, orderBy: UserOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [User]!
+  user(where: UserWhereUniqueInput!): User
   entity(where: EntityWhereUniqueInput!): Entity
   entityItem(where: EntityItemWhereUniqueInput!): EntityItem
   resource(where: ResourceWhereUniqueInput!): Resource
@@ -3500,8 +3102,7 @@ type Query {
   hasSource(where: HasSourceWhereUniqueInput!): HasSource
   hasTarget(where: HasTargetWhereUniqueInput!): HasTarget
   refersTo(where: RefersToWhereUniqueInput!): RefersTo
-  post(where: PostWhereUniqueInput!): Post
-  user(where: UserWhereUniqueInput!): User
+  usersConnection(where: UserWhereInput, orderBy: UserOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): UserConnection!
   entitiesConnection(where: EntityWhereInput, orderBy: EntityOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): EntityConnection!
   entityItemsConnection(where: EntityItemWhereInput, orderBy: EntityItemOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): EntityItemConnection!
   resourcesConnection(where: ResourceWhereInput, orderBy: ResourceOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): ResourceConnection!
@@ -3517,8 +3118,6 @@ type Query {
   hasSourcesConnection(where: HasSourceWhereInput, orderBy: HasSourceOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): HasSourceConnection!
   hasTargetsConnection(where: HasTargetWhereInput, orderBy: HasTargetOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): HasTargetConnection!
   refersToesConnection(where: RefersToWhereInput, orderBy: RefersToOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): RefersToConnection!
-  postsConnection(where: PostWhereInput, orderBy: PostOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): PostConnection!
-  usersConnection(where: UserWhereInput, orderBy: UserOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): UserConnection!
   """
   Fetches an object given its ID
   """
@@ -3639,7 +3238,6 @@ input RefersToUpdateInput {
 input RefersToUpdateOneInput {
   create: RefersToCreateInput
   connect: RefersToWhereUniqueInput
-  disconnect: Boolean
   delete: Boolean
   update: RefersToUpdateDataInput
   upsert: RefersToUpsertNestedInput
@@ -3648,7 +3246,6 @@ input RefersToUpdateOneInput {
 input RefersToUpdateOneWithoutSourceInput {
   create: RefersToCreateWithoutSourceInput
   connect: RefersToWhereUniqueInput
-  disconnect: Boolean
   delete: Boolean
   update: RefersToUpdateWithoutSourceDataInput
   upsert: RefersToUpsertWithoutSourceInput
@@ -4138,7 +3735,6 @@ input ResourceUpdateManyInput {
 input ResourceUpdateOneInput {
   create: ResourceCreateInput
   connect: ResourceWhereUniqueInput
-  disconnect: Boolean
   delete: Boolean
   update: ResourceUpdateDataInput
   upsert: ResourceUpsertNestedInput
@@ -4634,7 +4230,6 @@ input SelectorUpdateInput {
 input SelectorUpdateOneInput {
   create: SelectorCreateInput
   connect: SelectorWhereUniqueInput
-  disconnect: Boolean
   delete: Boolean
   update: SelectorUpdateDataInput
   upsert: SelectorUpsertNestedInput
@@ -4643,7 +4238,6 @@ input SelectorUpdateOneInput {
 input SelectorUpdateOneWithoutRefersToInput {
   create: SelectorCreateWithoutRefersToInput
   connect: SelectorWhereUniqueInput
-  disconnect: Boolean
   delete: Boolean
   update: SelectorUpdateWithoutRefersToDataInput
   upsert: SelectorUpsertWithoutRefersToInput
@@ -4798,6 +4392,7 @@ input SelectorWhereUniqueInput {
 }
 
 type Subscription {
+  user(where: UserSubscriptionWhereInput): UserSubscriptionPayload
   entity(where: EntitySubscriptionWhereInput): EntitySubscriptionPayload
   entityItem(where: EntityItemSubscriptionWhereInput): EntityItemSubscriptionPayload
   resource(where: ResourceSubscriptionWhereInput): ResourceSubscriptionPayload
@@ -4813,8 +4408,6 @@ type Subscription {
   hasSource(where: HasSourceSubscriptionWhereInput): HasSourceSubscriptionPayload
   hasTarget(where: HasTargetSubscriptionWhereInput): HasTargetSubscriptionPayload
   refersTo(where: RefersToSubscriptionWhereInput): RefersToSubscriptionPayload
-  post(where: PostSubscriptionWhereInput): PostSubscriptionPayload
-  user(where: UserSubscriptionWhereInput): UserSubscriptionPayload
 }
 
 """
@@ -4833,21 +4426,9 @@ type UserConnection {
 }
 
 input UserCreateInput {
+  name: String
+  password: String
   email: String!
-  password: String!
-  name: String!
-  posts: PostCreateManyWithoutAuthorInput
-}
-
-input UserCreateOneWithoutPostsInput {
-  create: UserCreateWithoutPostsInput
-  connect: UserWhereUniqueInput
-}
-
-input UserCreateWithoutPostsInput {
-  email: String!
-  password: String!
-  name: String!
 }
 
 """
@@ -4867,23 +4448,25 @@ type UserEdge {
 enum UserOrderByInput {
   id_ASC
   id_DESC
-  email_ASC
-  email_DESC
-  password_ASC
-  password_DESC
   name_ASC
   name_DESC
-  updatedAt_ASC
-  updatedAt_DESC
+  password_ASC
+  password_DESC
+  email_ASC
+  email_DESC
   createdAt_ASC
   createdAt_DESC
+  updatedAt_ASC
+  updatedAt_DESC
 }
 
 type UserPreviousValues {
   id: ID!
+  name: String
+  password: String
   email: String!
-  password: String!
-  name: String!
+  createdAt: DateTime!
+  updatedAt: DateTime!
 }
 
 type UserSubscriptionPayload {
@@ -4922,30 +4505,9 @@ input UserSubscriptionWhereInput {
 }
 
 input UserUpdateInput {
-  email: String
-  password: String
   name: String
-  posts: PostUpdateManyWithoutAuthorInput
-}
-
-input UserUpdateOneWithoutPostsInput {
-  create: UserCreateWithoutPostsInput
-  connect: UserWhereUniqueInput
-  disconnect: Boolean
-  delete: Boolean
-  update: UserUpdateWithoutPostsDataInput
-  upsert: UserUpsertWithoutPostsInput
-}
-
-input UserUpdateWithoutPostsDataInput {
-  email: String
   password: String
-  name: String
-}
-
-input UserUpsertWithoutPostsInput {
-  update: UserUpdateWithoutPostsDataInput!
-  create: UserCreateWithoutPostsInput!
+  email: String
 }
 
 input UserWhereInput {
@@ -5010,112 +4572,6 @@ input UserWhereInput {
   All values not ending with the given string.
   """
   id_not_ends_with: ID
-  email: String
-  """
-  All values that are not equal to given value.
-  """
-  email_not: String
-  """
-  All values that are contained in given list.
-  """
-  email_in: [String!]
-  """
-  All values that are not contained in given list.
-  """
-  email_not_in: [String!]
-  """
-  All values less than the given value.
-  """
-  email_lt: String
-  """
-  All values less than or equal the given value.
-  """
-  email_lte: String
-  """
-  All values greater than the given value.
-  """
-  email_gt: String
-  """
-  All values greater than or equal the given value.
-  """
-  email_gte: String
-  """
-  All values containing the given string.
-  """
-  email_contains: String
-  """
-  All values not containing the given string.
-  """
-  email_not_contains: String
-  """
-  All values starting with the given string.
-  """
-  email_starts_with: String
-  """
-  All values not starting with the given string.
-  """
-  email_not_starts_with: String
-  """
-  All values ending with the given string.
-  """
-  email_ends_with: String
-  """
-  All values not ending with the given string.
-  """
-  email_not_ends_with: String
-  password: String
-  """
-  All values that are not equal to given value.
-  """
-  password_not: String
-  """
-  All values that are contained in given list.
-  """
-  password_in: [String!]
-  """
-  All values that are not contained in given list.
-  """
-  password_not_in: [String!]
-  """
-  All values less than the given value.
-  """
-  password_lt: String
-  """
-  All values less than or equal the given value.
-  """
-  password_lte: String
-  """
-  All values greater than the given value.
-  """
-  password_gt: String
-  """
-  All values greater than or equal the given value.
-  """
-  password_gte: String
-  """
-  All values containing the given string.
-  """
-  password_contains: String
-  """
-  All values not containing the given string.
-  """
-  password_not_contains: String
-  """
-  All values starting with the given string.
-  """
-  password_starts_with: String
-  """
-  All values not starting with the given string.
-  """
-  password_not_starts_with: String
-  """
-  All values ending with the given string.
-  """
-  password_ends_with: String
-  """
-  All values not ending with the given string.
-  """
-  password_not_ends_with: String
   name: String
   """
   All values that are not equal to given value.
@@ -5169,9 +4625,170 @@ input UserWhereInput {
   All values not ending with the given string.
   """
   name_not_ends_with: String
-  posts_every: PostWhereInput
-  posts_some: PostWhereInput
-  posts_none: PostWhereInput
+  password: String
+  """
+  All values that are not equal to given value.
+  """
+  password_not: String
+  """
+  All values that are contained in given list.
+  """
+  password_in: [String!]
+  """
+  All values that are not contained in given list.
+  """
+  password_not_in: [String!]
+  """
+  All values less than the given value.
+  """
+  password_lt: String
+  """
+  All values less than or equal the given value.
+  """
+  password_lte: String
+  """
+  All values greater than the given value.
+  """
+  password_gt: String
+  """
+  All values greater than or equal the given value.
+  """
+  password_gte: String
+  """
+  All values containing the given string.
+  """
+  password_contains: String
+  """
+  All values not containing the given string.
+  """
+  password_not_contains: String
+  """
+  All values starting with the given string.
+  """
+  password_starts_with: String
+  """
+  All values not starting with the given string.
+  """
+  password_not_starts_with: String
+  """
+  All values ending with the given string.
+  """
+  password_ends_with: String
+  """
+  All values not ending with the given string.
+  """
+  password_not_ends_with: String
+  email: String
+  """
+  All values that are not equal to given value.
+  """
+  email_not: String
+  """
+  All values that are contained in given list.
+  """
+  email_in: [String!]
+  """
+  All values that are not contained in given list.
+  """
+  email_not_in: [String!]
+  """
+  All values less than the given value.
+  """
+  email_lt: String
+  """
+  All values less than or equal the given value.
+  """
+  email_lte: String
+  """
+  All values greater than the given value.
+  """
+  email_gt: String
+  """
+  All values greater than or equal the given value.
+  """
+  email_gte: String
+  """
+  All values containing the given string.
+  """
+  email_contains: String
+  """
+  All values not containing the given string.
+  """
+  email_not_contains: String
+  """
+  All values starting with the given string.
+  """
+  email_starts_with: String
+  """
+  All values not starting with the given string.
+  """
+  email_not_starts_with: String
+  """
+  All values ending with the given string.
+  """
+  email_ends_with: String
+  """
+  All values not ending with the given string.
+  """
+  email_not_ends_with: String
+  createdAt: DateTime
+  """
+  All values that are not equal to given value.
+  """
+  createdAt_not: DateTime
+  """
+  All values that are contained in given list.
+  """
+  createdAt_in: [DateTime!]
+  """
+  All values that are not contained in given list.
+  """
+  createdAt_not_in: [DateTime!]
+  """
+  All values less than the given value.
+  """
+  createdAt_lt: DateTime
+  """
+  All values less than or equal the given value.
+  """
+  createdAt_lte: DateTime
+  """
+  All values greater than the given value.
+  """
+  createdAt_gt: DateTime
+  """
+  All values greater than or equal the given value.
+  """
+  createdAt_gte: DateTime
+  updatedAt: DateTime
+  """
+  All values that are not equal to given value.
+  """
+  updatedAt_not: DateTime
+  """
+  All values that are contained in given list.
+  """
+  updatedAt_in: [DateTime!]
+  """
+  All values that are not contained in given list.
+  """
+  updatedAt_not_in: [DateTime!]
+  """
+  All values less than the given value.
+  """
+  updatedAt_lt: DateTime
+  """
+  All values less than or equal the given value.
+  """
+  updatedAt_lte: DateTime
+  """
+  All values greater than the given value.
+  """
+  updatedAt_gt: DateTime
+  """
+  All values greater than or equal the given value.
+  """
+  updatedAt_gte: DateTime
 }
 
 input UserWhereUniqueInput {

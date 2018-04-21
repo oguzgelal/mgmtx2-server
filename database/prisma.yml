@@ -10,6 +10,7 @@ secret: ${env:PRISMA_SECRET}
 
 # the file path pointing to your data model
 datamodel:
+  - ./user.graphql
   - ./rsl/Entity.graphql
   - ./rsl/EntityType.graphql
   - ./rsl/EntityItem.graphql
@@ -26,10 +27,8 @@ datamodel:
   - ./rsl/relations/HasSource.graphql
   - ./rsl/relations/HasTarget.graphql
   - ./rsl/relations/RefersTo.graphql
-  - ./datamodel.graphql
 
-# seed your service with initial data based on seed.graphql
 seed:
-  import: seed.graphql
+  import: ./seed.graphql
 
 cluster: ${env:PRISMA_CLUSTER}
